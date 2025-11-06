@@ -18,6 +18,7 @@ function App() {
   const [generatedPlan, setGeneratedPlan] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [showAllModules, setShowAllModules] = useState(false);
 
   // Get visible sections based on previous answers
   const getVisibleSections = () => {
@@ -531,35 +532,52 @@ function App() {
         );
 
       case 'multiselect':
-        return (
-          <div className="grid grid-cols-2 gap-3">
-            {question.options.map(option => {
-              const optionValue = typeof option === 'string' ? option : option.value;
-              const optionLabel = typeof option === 'string' ? option : option.label;
-              const optionDesc = typeof option === 'object' ? option.description : null;
+        const showMoreThreshold = question.show_more_threshold || 999;
+        const visibleOptions = showAllModules
+          ? question.options
+          : question.options.filter((opt, idx) => opt.popular || idx < showMoreThreshold);
+        const hasMoreOptions = question.options.length > showMoreThreshold;
 
-              return (
-                <button
-                  key={optionValue}
-                  type="button"
-                  onClick={() => handleModuleToggle(optionValue)}
-                  className={`p-3 rounded-lg border-2 text-left transition-colors ${
-                    responses.modules?.includes(optionValue)
-                      ? 'bg-purple-600 text-white border-purple-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
-                  }`}
-                >
-                  <div className="font-semibold text-sm">{optionLabel}</div>
-                  {optionDesc && (
-                    <div className={`text-xs mt-1 ${
-                      responses.modules?.includes(optionValue) ? 'text-purple-100' : 'text-gray-500'
-                    }`}>
-                      {optionDesc}
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+        return (
+          <div>
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              {visibleOptions.map(option => {
+                const optionValue = typeof option === 'string' ? option : option.value;
+                const optionLabel = typeof option === 'string' ? option : option.label;
+                const optionDesc = typeof option === 'object' ? option.description : null;
+
+                return (
+                  <button
+                    key={optionValue}
+                    type="button"
+                    onClick={() => handleModuleToggle(optionValue)}
+                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
+                      responses.modules?.includes(optionValue)
+                        ? 'bg-purple-600 text-white border-purple-600'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
+                    }`}
+                  >
+                    <div className="font-semibold text-sm">{optionLabel}</div>
+                    {optionDesc && (
+                      <div className={`text-xs mt-1 ${
+                        responses.modules?.includes(optionValue) ? 'text-purple-100' : 'text-gray-500'
+                      }`}>
+                        {optionDesc}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            {hasMoreOptions && (
+              <button
+                type="button"
+                onClick={() => setShowAllModules(!showAllModules)}
+                className="w-full py-2 px-4 text-sm font-semibold text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+              >
+                {showAllModules ? '▲ Show Less' : `▼ Show More (${question.options.length - visibleOptions.length} more modules)`}
+              </button>
+            )}
           </div>
         );
 

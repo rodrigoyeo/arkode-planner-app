@@ -189,32 +189,60 @@
             {
               "value": "CRM",
               "label": "CRM (Customer Relationship Management)",
-              "description": "Lead and opportunity pipeline management"
+              "description": "Lead and opportunity pipeline management",
+              "popular": true
             },
             {
               "value": "Sales",
               "label": "Sales",
-              "description": "Quotations, sales orders, and invoicing"
+              "description": "Quotations, sales orders, and invoicing",
+              "popular": true
             },
             {
               "value": "Purchase",
               "label": "Purchase",
-              "description": "Purchase orders and vendor management"
+              "description": "Purchase orders and vendor management",
+              "popular": true
             },
             {
               "value": "Inventory",
               "label": "Inventory",
-              "description": "Warehouse and stock management"
+              "description": "Warehouse and stock management",
+              "popular": true
+            },
+            {
+              "value": "Accounting",
+              "label": "Accounting",
+              "description": "Financial accounting and reporting",
+              "popular": true
             },
             {
               "value": "Manufacturing",
-              "label": "Manufacturing",
-              "description": "Production planning and shop floor management"
+              "label": "Manufacturing (MRP)",
+              "description": "Production planning and shop floor management",
+              "popular": true
             },
             {
               "value": "Projects",
               "label": "Projects",
-              "description": "Project and task management"
+              "description": "Project and task management",
+              "popular": true
+            },
+            {
+              "value": "FSM",
+              "label": "Field Service Management",
+              "description": "On-site service operations",
+              "popular": true
+            },
+            {
+              "value": "eCommerce",
+              "label": "eCommerce",
+              "description": "Online store and product catalog"
+            },
+            {
+              "value": "POS",
+              "label": "Point of Sale (POS)",
+              "description": "Retail point of sale system"
             },
             {
               "value": "Expenses",
@@ -227,25 +255,98 @@
               "description": "Workflow approvals and requests"
             },
             {
-              "value": "Accounting",
-              "label": "Accounting",
-              "description": "Financial accounting and reporting"
+              "value": "HR",
+              "label": "Human Resources",
+              "description": "Employee management and records"
             },
             {
-              "value": "FSM",
-              "label": "Field Service Management (FSM)",
-              "description": "On-site service operations"
+              "value": "Payroll",
+              "label": "Payroll",
+              "description": "Salary processing and payslips"
+            },
+            {
+              "value": "Recruitment",
+              "label": "Recruitment",
+              "description": "Job postings and applicant tracking"
+            },
+            {
+              "value": "Timesheets",
+              "label": "Timesheets",
+              "description": "Time tracking and billable hours"
+            },
+            {
+              "value": "Planning",
+              "label": "Planning",
+              "description": "Resource planning and scheduling"
+            },
+            {
+              "value": "Helpdesk",
+              "label": "Helpdesk",
+              "description": "Customer support ticket management"
+            },
+            {
+              "value": "LiveChat",
+              "label": "Live Chat",
+              "description": "Website chat support"
+            },
+            {
+              "value": "EmailMarketing",
+              "label": "Email Marketing",
+              "description": "Email campaigns and automation"
+            },
+            {
+              "value": "SMS",
+              "label": "SMS Marketing",
+              "description": "SMS campaigns and notifications"
+            },
+            {
+              "value": "Subscriptions",
+              "label": "Subscriptions",
+              "description": "Recurring billing and contracts"
+            },
+            {
+              "value": "Rental",
+              "label": "Rental",
+              "description": "Equipment and asset rental management"
+            },
+            {
+              "value": "Maintenance",
+              "label": "Maintenance",
+              "description": "Equipment maintenance requests"
+            },
+            {
+              "value": "Quality",
+              "label": "Quality",
+              "description": "Quality control and inspections"
+            },
+            {
+              "value": "PLM",
+              "label": "PLM (Product Lifecycle Management)",
+              "description": "Product design and engineering changes"
+            },
+            {
+              "value": "Documents",
+              "label": "Documents",
+              "description": "Document management system"
+            },
+            {
+              "value": "Sign",
+              "label": "Sign",
+              "description": "Electronic signature management"
+            },
+            {
+              "value": "Appointments",
+              "label": "Appointments",
+              "description": "Online booking and scheduling"
+            },
+            {
+              "value": "Events",
+              "label": "Events",
+              "description": "Event management and ticketing"
             }
           ],
-          "help_text": "Select all modules that were sold to the client"
-        },
-        {
-          "id": "module_hours",
-          "question": "Allocate implementation hours per module (optional)",
-          "type": "hours_table_by_module",
-          "required": false,
-          "conditional": "implementation_phase === true",
-          "help_text": "If you have specific hour allocations per module, enter them here. Otherwise, hours will be distributed automatically."
+          "show_more_threshold": 8,
+          "help_text": "Select all modules that were sold to the client. Click 'Show More' to see additional modules."
         }
       ]
     },
