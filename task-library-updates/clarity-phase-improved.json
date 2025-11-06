@@ -1,0 +1,181 @@
+{
+  "clarity_phase": {
+    "description": "Discovery and requirements gathering phase - 4 week structured approach",
+    "timeline": {
+      "total_weeks": 4,
+      "week_1_2": {
+        "name": "Discovery, Mapping, and Identifying",
+        "percentage": 50,
+        "focus": "Understanding current state and requirements"
+      },
+      "week_3": {
+        "name": "Optimizing and Process Design",
+        "percentage": 20,
+        "focus": "Designing future-state processes"
+      },
+      "week_4": {
+        "name": "Master of Implementation",
+        "percentage": 30,
+        "focus": "Creating and presenting Odoo solution mockup"
+      }
+    },
+    "standard_tasks": [
+      {
+        "name": "Project Kickoff Meeting",
+        "name_es": "Reunión de Inicio del Proyecto",
+        "description": "Initial meeting with stakeholders to align on project scope, timeline, and success criteria",
+        "description_es": "Reunión inicial con stakeholders para alinear alcance, cronograma y criterios de éxito",
+        "estimated_hours": 2,
+        "priority": "High",
+        "category": "Project Management",
+        "tags": ["Clarity", "Kickoff", "Week 1"],
+        "week": 1,
+        "task_type": "native"
+      },
+      {
+        "name": "Stakeholder Interviews",
+        "name_es": "Entrevistas con Stakeholders",
+        "description": "Conduct interviews with key stakeholders to understand business requirements and pain points",
+        "description_es": "Realizar entrevistas con stakeholders clave para entender requisitos y puntos de dolor",
+        "estimated_hours": 8,
+        "priority": "High",
+        "category": "Requirements Gathering",
+        "tags": ["Clarity", "Discovery", "Week 1-2"],
+        "week": 1,
+        "task_type": "native"
+      },
+      {
+        "name": "Current Process Mapping (As-Is)",
+        "name_es": "Mapeo de Procesos Actuales (As-Is)",
+        "description": "Document client's current business processes across all departments",
+        "description_es": "Documentar los procesos de negocio actuales del cliente en todos los departamentos",
+        "estimated_hours": 12,
+        "priority": "High",
+        "category": "Process Analysis",
+        "tags": ["Clarity", "Process Mapping", "Week 1-2"],
+        "week": 1,
+        "task_type": "native"
+      },
+      {
+        "name": "Data Migration Assessment",
+        "name_es": "Evaluación de Migración de Datos",
+        "description": "Evaluate existing data quality, structure, and migration requirements",
+        "description_es": "Evaluar calidad, estructura y requisitos de migración de datos existentes",
+        "estimated_hours": 4,
+        "priority": "Medium",
+        "category": "Data Analysis",
+        "tags": ["Clarity", "Data Migration", "Week 2"],
+        "week": 2,
+        "task_type": "native"
+      },
+      {
+        "name": "Integration Requirements Analysis",
+        "name_es": "Análisis de Requisitos de Integración",
+        "description": "Identify all third-party systems requiring integration with Odoo",
+        "description_es": "Identificar todos los sistemas de terceros que requieren integración con Odoo",
+        "estimated_hours": 4,
+        "priority": "Medium",
+        "category": "Integration Analysis",
+        "tags": ["Clarity", "Integrations", "Week 2"],
+        "week": 2,
+        "task_type": "native"
+      },
+      {
+        "name": "Gap Analysis Workshop",
+        "name_es": "Taller de Análisis de Brechas",
+        "description": "Identify gaps between current processes and Odoo standard functionality",
+        "description_es": "Identificar brechas entre procesos actuales y funcionalidad estándar de Odoo",
+        "estimated_hours": 6,
+        "priority": "High",
+        "category": "Analysis",
+        "tags": ["Clarity", "Gap Analysis", "Week 2"],
+        "week": 2,
+        "task_type": "native"
+      },
+      {
+        "name": "Future Process Design (To-Be)",
+        "name_es": "Diseño de Procesos Futuros (To-Be)",
+        "description": "Design optimized future-state processes leveraging Odoo best practices",
+        "description_es": "Diseñar procesos optimizados del estado futuro aprovechando las mejores prácticas de Odoo",
+        "estimated_hours": 10,
+        "priority": "High",
+        "category": "Process Design",
+        "tags": ["Clarity", "Process Design", "Week 3"],
+        "week": 3,
+        "task_type": "native"
+      },
+      {
+        "name": "Customization Scoping",
+        "name_es": "Alcance de Personalizaciones",
+        "description": "Document customizations needed beyond standard Odoo functionality",
+        "description_es": "Documentar personalizaciones necesarias más allá de la funcionalidad estándar de Odoo",
+        "estimated_hours": 6,
+        "priority": "High",
+        "category": "Scoping",
+        "tags": ["Clarity", "Customization", "Week 3"],
+        "week": 3,
+        "task_type": "native"
+      },
+      {
+        "name": "User Access & Security Design",
+        "name_es": "Diseño de Acceso de Usuarios y Seguridad",
+        "description": "Define user roles, permissions, and security requirements",
+        "description_es": "Definir roles de usuario, permisos y requisitos de seguridad",
+        "estimated_hours": 3,
+        "priority": "Medium",
+        "category": "Security",
+        "tags": ["Clarity", "Security", "Week 3"],
+        "week": 3,
+        "task_type": "native"
+      },
+      {
+        "name": "Process To-Be Review & Client Approval",
+        "name_es": "Revisión de Procesos To-Be y Aprobación del Cliente",
+        "description": "Present optimized processes to client and obtain approval before creating Master of Implementation",
+        "description_es": "Presentar procesos optimizados al cliente y obtener aprobación antes de crear el Master of Implementation",
+        "estimated_hours": 3,
+        "priority": "High",
+        "category": "Review",
+        "tags": ["Clarity", "Review", "Week 3"],
+        "week": 3,
+        "task_type": "native"
+      },
+      {
+        "name": "Master of Implementation - Creation",
+        "name_es": "Master of Implementation - Creación",
+        "description": "Create visual mockup/prototype showing how To-Be processes translate into Odoo solution. This is the key deliverable showing the future Odoo system structure, screens, and workflows.",
+        "description_es": "Crear prototipo visual mostrando cómo los procesos To-Be se traducen en la solución Odoo. Este es el entregable clave que muestra la estructura, pantallas y flujos del futuro sistema Odoo.",
+        "estimated_hours": 16,
+        "priority": "High",
+        "category": "Master of Implementation",
+        "tags": ["Clarity", "Master", "Week 4"],
+        "week": 4,
+        "task_type": "native"
+      },
+      {
+        "name": "Master of Implementation - Presentation",
+        "name_es": "Master of Implementation - Presentación",
+        "description": "Present Master of Implementation to stakeholders, demonstrating the complete Odoo solution design and obtaining sign-off",
+        "description_es": "Presentar el Master of Implementation a los stakeholders, demostrando el diseño completo de la solución Odoo y obteniendo aprobación",
+        "estimated_hours": 4,
+        "priority": "High",
+        "category": "Master of Implementation",
+        "tags": ["Clarity", "Master", "Presentation", "Week 4"],
+        "week": 4,
+        "task_type": "native"
+      },
+      {
+        "name": "Clarity Phase Sign-off",
+        "name_es": "Aprobación de Fase Clarity",
+        "description": "Final approval from stakeholders to proceed to implementation phase",
+        "description_es": "Aprobación final de los stakeholders para proceder a la fase de implementación",
+        "estimated_hours": 2,
+        "priority": "High",
+        "category": "Project Management",
+        "tags": ["Clarity", "Sign-off", "Week 4"],
+        "week": 4,
+        "task_type": "native"
+      }
+    ]
+  }
+}

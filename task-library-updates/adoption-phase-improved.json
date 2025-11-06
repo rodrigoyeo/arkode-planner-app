@@ -1,0 +1,99 @@
+{
+  "adoption_phase": {
+    "description": "Training and change management phase - time-based support model",
+    "note": "Duration and hours are specified by user. System creates monthly support tasks automatically based on adoption duration.",
+    "standard_tasks": [
+      {
+        "name": "Training Material Preparation",
+        "name_es": "Preparación de Material de Capacitación",
+        "description": "Create training guides, videos, and documentation tailored to client's processes",
+        "description_es": "Crear guías de capacitación, videos y documentación adaptados a los procesos del cliente",
+        "estimated_hours": 8,
+        "priority": "High",
+        "category": "Training Preparation",
+        "tags": ["Adoption", "Training"],
+        "task_type": "native"
+      },
+      {
+        "name": "Knowledge Base Setup",
+        "name_es": "Configuración de Base de Conocimiento",
+        "description": "Create internal knowledge base with FAQs, tips, and troubleshooting guides",
+        "description_es": "Crear base de conocimiento interna con FAQs, consejos y guías de solución de problemas",
+        "estimated_hours": 6,
+        "priority": "Medium",
+        "category": "Documentation",
+        "tags": ["Adoption", "Documentation"],
+        "task_type": "native"
+      },
+      {
+        "name": "Admin/Super User Training",
+        "name_es": "Capacitación de Administradores/Super Usuarios",
+        "description": "Train system administrators and super users on system configuration and maintenance",
+        "description_es": "Capacitar a administradores del sistema y super usuarios en configuración y mantenimiento",
+        "estimated_hours": 8,
+        "priority": "High",
+        "category": "Training Delivery",
+        "tags": ["Adoption", "Training", "Admin"],
+        "task_type": "native"
+      },
+      {
+        "name": "End User Training Sessions",
+        "name_es": "Sesiones de Capacitación para Usuarios Finales",
+        "description": "Conduct role-based training sessions for end users by department/module",
+        "description_es": "Realizar sesiones de capacitación basadas en roles para usuarios finales por departamento/módulo",
+        "estimated_hours": 16,
+        "priority": "High",
+        "category": "Training Delivery",
+        "tags": ["Adoption", "Training", "End Users"],
+        "task_type": "native"
+      },
+      {
+        "name": "Go-Live Preparation",
+        "name_es": "Preparación para Go-Live",
+        "description": "Final system checks, cutover planning, and go-live readiness assessment",
+        "description_es": "Verificaciones finales del sistema, planificación de corte y evaluación de preparación para go-live",
+        "estimated_hours": 4,
+        "priority": "High",
+        "category": "Go-Live",
+        "tags": ["Adoption", "Go-Live"],
+        "task_type": "native"
+      },
+      {
+        "name": "Go-Live Support (Day 1-3)",
+        "name_es": "Soporte Go-Live (Día 1-3)",
+        "description": "Intensive on-site or remote support during first days of live operation",
+        "description_es": "Soporte intensivo en sitio o remoto durante los primeros días de operación en vivo",
+        "estimated_hours": 12,
+        "priority": "High",
+        "category": "Go-Live Support",
+        "tags": ["Adoption", "Go-Live", "Support"],
+        "task_type": "native"
+      },
+      {
+        "name": "Project Closure & Handover",
+        "name_es": "Cierre de Proyecto y Entrega",
+        "description": "Final project review, lessons learned, and handover to ongoing support team",
+        "description_es": "Revisión final del proyecto, lecciones aprendidas y entrega al equipo de soporte continuo",
+        "estimated_hours": 2,
+        "priority": "High",
+        "category": "Project Management",
+        "tags": ["Adoption", "Closure"],
+        "task_type": "native"
+      }
+    ],
+    "dynamic_support_tasks": {
+      "description": "These tasks are generated automatically based on adoption duration and total hours",
+      "task_template": {
+        "name": "Ongoing Support - Month {month_number}",
+        "name_es": "Soporte Continuo - Mes {month_number}",
+        "description": "Provide ongoing support, training, and assistance to users. Hours allocated based on total adoption budget divided by number of months.",
+        "description_es": "Proporcionar soporte continuo, capacitación y asistencia a usuarios. Horas asignadas según presupuesto total de adopción dividido por número de meses.",
+        "priority": "Medium",
+        "category": "Ongoing Support",
+        "tags": ["Adoption", "Support", "Month {month_number}"],
+        "task_type": "native"
+      },
+      "calculation": "total_adoption_hours minus sum of standard_tasks hours, divided by number of months"
+    }
+  }
+}

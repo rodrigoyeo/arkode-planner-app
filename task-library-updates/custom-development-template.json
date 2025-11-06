@@ -1,0 +1,87 @@
+{
+  "custom_development": {
+    "description": "Custom development tasks added when customizations are required",
+    "note": "These tasks are dynamically added when user indicates customizations are needed in questionnaire",
+    "tasks": [
+      {
+        "name": "Custom Development - Requirements Documentation",
+        "name_es": "Desarrollo Personalizado - Documentación de Requisitos",
+        "description": "Document detailed requirements for custom development work",
+        "description_es": "Documentar requisitos detallados para el trabajo de desarrollo personalizado",
+        "estimated_hours": 6,
+        "priority": "High",
+        "category": "Custom Development",
+        "tags": ["Implementation", "Custom", "Requirements"],
+        "task_type": "custom"
+      },
+      {
+        "name": "Custom Development - Technical Design",
+        "name_es": "Desarrollo Personalizado - Diseño Técnico",
+        "description": "Create technical design and architecture for custom modules and features",
+        "description_es": "Crear diseño técnico y arquitectura para módulos y características personalizadas",
+        "estimated_hours": 8,
+        "priority": "High",
+        "category": "Custom Development",
+        "tags": ["Implementation", "Custom", "Design"],
+        "task_type": "custom"
+      },
+      {
+        "name": "Custom Module Development",
+        "name_es": "Desarrollo de Módulo Personalizado",
+        "description": "Develop custom Odoo modules and features based on requirements. Hours allocated based on customization scope from questionnaire.",
+        "description_es": "Desarrollar módulos y características personalizadas de Odoo basadas en requisitos. Horas asignadas según alcance de personalización del cuestionario.",
+        "estimated_hours": 40,
+        "priority": "High",
+        "category": "Custom Development",
+        "tags": ["Implementation", "Custom", "Development"],
+        "task_type": "custom",
+        "adjustable": true,
+        "note": "Hours should be adjusted based on customization_scope from questionnaire"
+      },
+      {
+        "name": "Custom Development - Unit Testing",
+        "name_es": "Desarrollo Personalizado - Pruebas Unitarias",
+        "description": "Create and execute unit tests for custom code",
+        "description_es": "Crear y ejecutar pruebas unitarias para código personalizado",
+        "estimated_hours": 8,
+        "priority": "High",
+        "category": "Custom Development",
+        "tags": ["Implementation", "Custom", "Testing"],
+        "task_type": "custom"
+      },
+      {
+        "name": "Custom Development - Integration Testing",
+        "name_es": "Desarrollo Personalizado - Pruebas de Integración",
+        "description": "Test custom modules integration with standard Odoo functionality",
+        "description_es": "Probar integración de módulos personalizados con funcionalidad estándar de Odoo",
+        "estimated_hours": 6,
+        "priority": "High",
+        "category": "Custom Development",
+        "tags": ["Implementation", "Custom", "Testing"],
+        "task_type": "custom"
+      },
+      {
+        "name": "Custom Development - Documentation",
+        "name_es": "Desarrollo Personalizado - Documentación",
+        "description": "Create technical and user documentation for custom features",
+        "description_es": "Crear documentación técnica y de usuario para características personalizadas",
+        "estimated_hours": 4,
+        "priority": "Medium",
+        "category": "Custom Development",
+        "tags": ["Implementation", "Custom", "Documentation"],
+        "task_type": "custom"
+      },
+      {
+        "name": "Custom Development - Code Review & QA",
+        "name_es": "Desarrollo Personalizado - Revisión de Código y QA",
+        "description": "Code review and quality assurance for custom development",
+        "description_es": "Revisión de código y aseguramiento de calidad para desarrollo personalizado",
+        "estimated_hours": 4,
+        "priority": "High",
+        "category": "Custom Development",
+        "tags": ["Implementation", "Custom", "QA"],
+        "task_type": "custom"
+      }
+    ]
+  }
+}
