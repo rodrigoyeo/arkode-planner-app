@@ -100,6 +100,14 @@
           "required": false,
           "placeholder": "e.g., John Doe (CEO), Jane Smith (CFO), Mike Johnson (Operations Manager)",
           "help_text": "Key decision-makers and their roles"
+        },
+        {
+          "id": "enable_ai_customization",
+          "question": "Enable AI Task Customization",
+          "type": "checkbox",
+          "required": false,
+          "default": true,
+          "help_text": "Use AI to generate context-specific tasks based on your industry, pain points, and requirements (recommended)"
         }
       ]
     },

@@ -11,6 +11,9 @@ import clarityPhaseImproved from '../../task-library-updates/clarity-phase-impro
 import adoptionPhaseImproved from '../../task-library-updates/adoption-phase-improved.json';
 import customDevTemplate from '../../task-library-updates/custom-development-template.json';
 
+// Import AI customization service
+import { generateCustomTasks } from './services/aiCustomization.js';
+
 function App() {
   const [step, setStep] = useState('welcome'); // welcome, questionnaire, review, plan, export
   const [currentSection, setCurrentSection] = useState(0);
@@ -120,7 +123,7 @@ function App() {
     return addDays(dateString, weeks * 7);
   };
 
-  const generateProjectPlan = () => {
+  const generateProjectPlan = async () => {
     setIsGenerating(true);
 
     try {
@@ -355,6 +358,59 @@ function App() {
         }
       }
 
+      // Generate AI-customized tasks if enabled
+      if (responses.enable_ai_customization !== false) {
+        console.log('Generating AI-customized tasks...');
+
+        try {
+          const aiTasksPromises = [];
+
+          // Generate AI tasks for each enabled phase
+          if (responses.clarity_phase) {
+            aiTasksPromises.push(generateCustomTasks(responses, 'clarity'));
+          }
+          if (responses.implementation_phase) {
+            aiTasksPromises.push(generateCustomTasks(responses, 'implementation'));
+          }
+          if (responses.adoption_phase) {
+            aiTasksPromises.push(generateCustomTasks(responses, 'adoption'));
+          }
+
+          // Wait for all AI tasks to be generated
+          const aiTasksResults = await Promise.all(aiTasksPromises);
+
+          // Add AI tasks to plan
+          aiTasksResults.forEach(aiTasks => {
+            if (aiTasks && aiTasks.length > 0) {
+              aiTasks.forEach(task => {
+                plan.tasks.push({
+                  id: taskId++,
+                  title: task.name,
+                  description: task.description || '',
+                  allocated_hours: Math.round(task.estimated_hours),
+                  priority: task.priority || 'Medium',
+                  category: task.category || 'AI Generated',
+                  tags: task.tags || [task.phase],
+                  phase: task.phase,
+                  assignee: responses.project_manager || '',
+                  stage: 'New',
+                  start_date: '',
+                  deadline: '',
+                  milestone: `${task.phase} Phase - AI Customized`,
+                  parent_task: '',
+                  task_type: 'ai_generated'
+                });
+              });
+            }
+          });
+
+          console.log(`Added ${aiTasksResults.flat().length} AI-customized tasks`);
+        } catch (error) {
+          console.error('Error generating AI tasks:', error);
+          // Continue with template tasks even if AI fails
+        }
+      }
+
       setGeneratedPlan(plan);
       setStep('plan');
     } catch (error) {
@@ -372,7 +428,9 @@ function App() {
     const csvData = generatedPlan.tasks.map(task => {
       // Add task_type to tags
       let taskTags = Array.isArray(task.tags) ? [...task.tags] : (task.tags ? [task.tags] : []);
-      const typeTag = task.task_type === 'custom' ? 'Custom' : 'Native';
+      const typeTag = task.task_type === 'custom' ? 'Custom'
+                    : task.task_type === 'ai_generated' ? 'AI Generated'
+                    : 'Native';
       if (!taskTags.includes(typeTag)) {
         taskTags.push(typeTag);
       }
@@ -962,9 +1020,11 @@ function App() {
                               <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded ${
                                 task.task_type === 'custom'
                                   ? 'bg-orange-100 text-orange-800'
+                                  : task.task_type === 'ai_generated'
+                                  ? 'bg-green-100 text-green-800'
                                   : 'bg-blue-100 text-blue-800'
                               }`}>
-                                {task.task_type === 'custom' ? 'Custom' : 'Native'}
+                                {task.task_type === 'custom' ? 'Custom' : task.task_type === 'ai_generated' ? 'AI Generated' : 'Native'}
                               </span>
                             </div>
                             <div className="text-xs text-gray-500 mt-1">{task.description}</div>
