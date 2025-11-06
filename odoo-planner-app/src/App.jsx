@@ -6,6 +6,11 @@ import Papa from 'papaparse';
 import taskLibrary from '../../task-library.json';
 import questionnaireStructure from '../../questionnaire-structure.json';
 
+// Import improved phase structures
+import clarityPhaseImproved from '../../task-library-updates/clarity-phase-improved.json';
+import adoptionPhaseImproved from '../../task-library-updates/adoption-phase-improved.json';
+import customDevTemplate from '../../task-library-updates/custom-development-template.json';
+
 function App() {
   const [step, setStep] = useState('welcome'); // welcome, questionnaire, review, plan, export
   const [currentSection, setCurrentSection] = useState(0);
@@ -118,19 +123,20 @@ function App() {
 
       let taskId = 1;
 
-      // Add Clarity Phase tasks
+      // Add Clarity Phase tasks (using improved structure)
       if (responses.clarity_phase) {
         const clarityHours = parseFloat(responses.clarity_hours || 0);
-        const clarityTasks = taskLibrary.clarity_phase.standard_tasks;
+        const clarityTasks = clarityPhaseImproved.clarity_phase.standard_tasks;
         const totalEstimatedHours = clarityTasks.reduce((sum, t) => sum + t.estimated_hours, 0);
         const hourMultiplier = clarityHours > 0 ? clarityHours / totalEstimatedHours : 1;
+        const language = responses.language || 'English';
 
         clarityTasks.forEach(task => {
           plan.tasks.push({
             id: taskId++,
-            title: task.name,
-            description: task.description,
-            allocated_hours: Math.round(task.estimated_hours * hourMultiplier * 10) / 10,
+            title: language === 'Spanish' ? task.name_es : task.name,
+            description: language === 'Spanish' ? task.description_es : task.description,
+            allocated_hours: Math.round(task.estimated_hours * hourMultiplier), // FIXED: No more decimals
             priority: task.priority,
             category: task.category,
             tags: task.tags,
@@ -138,8 +144,10 @@ function App() {
             assignee: responses.project_manager || '',
             stage: 'New',
             deadline: '',
-            milestone: 'Clarity Phase',
-            parent_task: ''
+            milestone: `Clarity Phase - Week ${task.week}`,
+            parent_task: '',
+            task_type: task.task_type || 'native',
+            week: task.week
           });
         });
       }
@@ -148,6 +156,7 @@ function App() {
       if (responses.implementation_phase && responses.modules?.length > 0) {
         const implementationHours = parseFloat(responses.implementation_hours || 0);
         const selectedModules = responses.modules;
+        const language = responses.language || 'English';
 
         selectedModules.forEach(moduleName => {
           const moduleData = taskLibrary.modules[moduleName];
@@ -166,7 +175,7 @@ function App() {
               id: taskId++,
               title: task.name,
               description: task.description,
-              allocated_hours: Math.round(task.estimated_hours * hourMultiplier * 10) / 10,
+              allocated_hours: Math.round(task.estimated_hours * hourMultiplier), // FIXED: No more decimals
               priority: task.priority,
               category: task.category,
               tags: task.tags,
@@ -177,25 +186,62 @@ function App() {
               deadline: '',
               milestone: `${moduleName} Implementation`,
               parent_task: '',
-              odoo_feature: task.odoo_feature || ''
+              odoo_feature: task.odoo_feature || '',
+              task_type: 'native'
             });
           });
         });
+
+        // Add Custom Development tasks if customizations are required
+        if (responses.customizations === 'Yes') {
+          const customTasks = customDevTemplate.custom_development.tasks;
+          const customizationScope = responses.customization_scope || '';
+
+          customTasks.forEach(task => {
+            // Adjust hours for main development task based on scope
+            let hours = task.estimated_hours;
+            if (task.adjustable && customizationScope.length > 100) {
+              // Estimate based on complexity (simple heuristic)
+              hours = Math.min(80, Math.max(20, Math.round(customizationScope.length / 5)));
+            }
+
+            plan.tasks.push({
+              id: taskId++,
+              title: language === 'Spanish' ? task.name_es : task.name,
+              description: language === 'Spanish' ? task.description_es : task.description,
+              allocated_hours: Math.round(hours), // Whole numbers only
+              priority: task.priority,
+              category: task.category,
+              tags: task.tags,
+              phase: 'Implementation',
+              module: 'Custom Development',
+              assignee: responses.project_manager || '',
+              stage: 'New',
+              deadline: '',
+              milestone: 'Custom Development',
+              parent_task: '',
+              task_type: 'custom' // Mark as custom
+            });
+          });
+        }
       }
 
-      // Add Adoption Phase tasks
+      // Add Adoption Phase tasks (using improved structure)
       if (responses.adoption_phase) {
         const adoptionHours = parseFloat(responses.adoption_hours || 0);
-        const adoptionTasks = taskLibrary.adoption_phase.standard_tasks;
-        const totalEstimatedHours = adoptionTasks.reduce((sum, t) => sum + t.estimated_hours, 0);
-        const hourMultiplier = adoptionHours > 0 ? adoptionHours / totalEstimatedHours : 1;
+        const adoptionDurationMonths = parseInt(responses.adoption_duration_months || 2);
+        const language = responses.language || 'English';
 
-        adoptionTasks.forEach(task => {
+        // Add core adoption tasks
+        const coreTasks = adoptionPhaseImproved.adoption_phase.standard_tasks;
+        const coreTasksHours = coreTasks.reduce((sum, t) => sum + t.estimated_hours, 0);
+
+        coreTasks.forEach(task => {
           plan.tasks.push({
             id: taskId++,
-            title: task.name,
-            description: task.description,
-            allocated_hours: Math.round(task.estimated_hours * hourMultiplier * 10) / 10,
+            title: language === 'Spanish' ? task.name_es : task.name,
+            description: language === 'Spanish' ? task.description_es : task.description,
+            allocated_hours: task.estimated_hours, // Core tasks use standard hours
             priority: task.priority,
             category: task.category,
             tags: task.tags,
@@ -204,9 +250,39 @@ function App() {
             stage: 'New',
             deadline: '',
             milestone: 'Adoption Phase',
-            parent_task: ''
+            parent_task: '',
+            task_type: task.task_type || 'native'
           });
         });
+
+        // Add dynamic monthly support tasks
+        const remainingHours = adoptionHours - coreTasksHours;
+        if (remainingHours > 0 && adoptionDurationMonths > 0) {
+          const monthlyHours = Math.round(remainingHours / adoptionDurationMonths);
+
+          for (let month = 1; month <= adoptionDurationMonths; month++) {
+            plan.tasks.push({
+              id: taskId++,
+              title: language === 'Spanish'
+                ? `Soporte Continuo - Mes ${month}`
+                : `Ongoing Support - Month ${month}`,
+              description: language === 'Spanish'
+                ? `Proporcionar soporte continuo, capacitación y asistencia a usuarios durante el mes ${month}. Incluye resolución de dudas, ajustes menores y actualización de la base de conocimiento.`
+                : `Provide ongoing support, training, and assistance to users during month ${month}. Includes answering questions, minor adjustments, and knowledge base updates.`,
+              allocated_hours: monthlyHours,
+              priority: 'Medium',
+              category: 'Ongoing Support',
+              tags: ['Adoption', 'Support', `Month ${month}`],
+              phase: 'Adoption',
+              assignee: responses.project_manager || '',
+              stage: 'New',
+              deadline: '',
+              milestone: `Adoption - Month ${month}`,
+              parent_task: '',
+              task_type: 'native'
+            });
+          }
+        }
       }
 
       setGeneratedPlan(plan);
@@ -223,19 +299,28 @@ function App() {
     if (!generatedPlan) return;
 
     // Prepare CSV data in Odoo format
-    const csvData = generatedPlan.tasks.map(task => ({
-      'Title': task.title,
-      'Project': responses.project_name,
-      'Assignees': task.assignee,
-      'Allocated Time': task.allocated_hours,
-      'Deadline': task.deadline || '',
-      'Stage': 'New',
-      'Priority': task.priority === 'High' ? 'High priority' :
-                  task.priority === 'Medium' ? 'Medium priority' : 'Low priority',
-      'Tags': Array.isArray(task.tags) ? task.tags.join(',') : task.tags,
-      'Milestone': task.milestone || '',
-      'Parent Task': task.parent_task || ''
-    }));
+    const csvData = generatedPlan.tasks.map(task => {
+      // Add task_type to tags
+      let taskTags = Array.isArray(task.tags) ? [...task.tags] : (task.tags ? [task.tags] : []);
+      const typeTag = task.task_type === 'custom' ? 'Custom' : 'Native';
+      if (!taskTags.includes(typeTag)) {
+        taskTags.push(typeTag);
+      }
+
+      return {
+        'Title': task.title,
+        'Project': responses.project_name,
+        'Assignees': task.assignee,
+        'Allocated Time': task.allocated_hours,
+        'Deadline': task.deadline || '',
+        'Stage': 'New',
+        'Priority': task.priority === 'High' ? 'High priority' :
+                    task.priority === 'Medium' ? 'Medium priority' : 'Low priority',
+        'Tags': taskTags.join(','),
+        'Milestone': task.milestone || '',
+        'Parent Task': task.parent_task || ''
+      };
+    });
 
     const csv = Papa.unparse(csvData);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -714,7 +799,16 @@ function App() {
                       {tasksByPhase[phase].map(task => (
                         <tr key={task.id} className="hover:bg-gray-50">
                           <td className="px-4 py-3">
-                            <div className="font-medium text-gray-900">{task.title}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="font-medium text-gray-900">{task.title}</div>
+                              <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded ${
+                                task.task_type === 'custom'
+                                  ? 'bg-orange-100 text-orange-800'
+                                  : 'bg-blue-100 text-blue-800'
+                              }`}>
+                                {task.task_type === 'custom' ? 'Custom' : 'Native'}
+                              </span>
+                            </div>
                             <div className="text-xs text-gray-500 mt-1">{task.description}</div>
                             {task.odoo_feature && (
                               <div className="text-xs text-purple-600 mt-1">

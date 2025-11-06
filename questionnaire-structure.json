@@ -47,6 +47,30 @@
           "help_text": "Industry context helps tailor implementation recommendations"
         },
         {
+          "id": "language",
+          "question": "What language should the task plan be in?",
+          "type": "select",
+          "required": true,
+          "options": ["English", "Spanish"],
+          "default": "English",
+          "help_text": "All task names and descriptions will be in this language"
+        },
+        {
+          "id": "country",
+          "question": "What country is the client based in?",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., Mexico, United States, Colombia",
+          "help_text": "Affects accounting localization and compliance requirements"
+        },
+        {
+          "id": "project_start_date",
+          "question": "Project Start Date",
+          "type": "date",
+          "required": true,
+          "help_text": "When the project will officially begin (used for task date calculations)"
+        },
+        {
           "id": "timeline",
           "question": "What is the desired project timeline?",
           "type": "text",
@@ -107,7 +131,7 @@
           "type": "checkbox",
           "required": false,
           "default": true,
-          "help_text": "User training, go-live support, and hypercare"
+          "help_text": "User training, go-live support, and ongoing post-launch support"
         }
       ]
     },
@@ -338,6 +362,16 @@
           "help_text": "Multiple legal entities in one Odoo instance"
         },
         {
+          "id": "company_count",
+          "question": "How many companies?",
+          "type": "number",
+          "required": false,
+          "conditional": "multi_company === 'Yes'",
+          "min": 2,
+          "placeholder": "e.g., 3",
+          "help_text": "Number of legal entities/companies to configure"
+        },
+        {
           "id": "multi_warehouse",
           "question": "Does the client have multiple warehouses?",
           "type": "radio",
@@ -412,14 +446,14 @@
           "help_text": "Days of on-site/intensive support during go-live"
         },
         {
-          "id": "hypercare_weeks",
-          "question": "Hypercare period duration (weeks)",
+          "id": "adoption_duration_months",
+          "question": "Adoption support duration (months)",
           "type": "number",
           "required": false,
           "min": 1,
-          "default": 4,
-          "placeholder": "e.g., 4",
-          "help_text": "Extended support period after go-live"
+          "default": 2,
+          "placeholder": "e.g., 2",
+          "help_text": "Number of months of ongoing support after go-live"
         }
       ]
     },
