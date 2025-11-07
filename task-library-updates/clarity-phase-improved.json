@@ -22,7 +22,7 @@
     "standard_tasks": [
       {
         "name": "Project Kickoff Meeting",
-        "name_es": "Reunión de Inicio del Proyecto",
+        "name_es": "Kick-off del proyecto",
         "description": "Initial meeting with stakeholders to align on project scope, timeline, and success criteria",
         "description_es": "Reunión inicial con stakeholders para alinear alcance, cronograma y criterios de éxito",
         "estimated_hours": 2,
@@ -82,7 +82,7 @@
       },
       {
         "name": "Future Process Design (To-Be)",
-        "name_es": "Diseño de Procesos Futuros (To-Be)",
+        "name_es": "Diseño del proceso To-Be",
         "description": "Design optimized future-state processes leveraging Odoo best practices",
         "description_es": "Diseñar procesos optimizados del estado futuro aprovechando las mejores prácticas de Odoo",
         "estimated_hours": 10,
@@ -94,7 +94,7 @@
       },
       {
         "name": "Customization Scoping",
-        "name_es": "Alcance de Personalizaciones",
+        "name_es": "Definición del alcance de personalizaciones",
         "description": "Document customizations needed beyond standard Odoo functionality",
         "description_es": "Documentar personalizaciones necesarias más allá de la funcionalidad estándar de Odoo",
         "estimated_hours": 6,

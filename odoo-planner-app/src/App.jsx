@@ -368,8 +368,8 @@ function App() {
 
             plan.tasks.push({
               id: taskId++,
-              title: task.name,
-              description: task.description,
+              title: language === 'Spanish' && task.name_es ? task.name_es : task.name,
+              description: language === 'Spanish' && task.description_es ? task.description_es : task.description,
               allocated_hours: Math.round(task.estimated_hours * hourMultiplier), // FIXED: No more decimals
               priority: task.priority,
               category: task.category,
@@ -380,7 +380,7 @@ function App() {
               stage: 'New',
               start_date: taskStart,
               deadline: taskEnd,
-              milestone: `${moduleName} Implementation`,
+              milestone: language === 'Spanish' ? `Implementación del módulo de ${moduleName}` : `Implementation of ${moduleName} Module`,
               parent_task: '',
               odoo_feature: task.odoo_feature || '',
               task_type: 'native'
@@ -502,7 +502,7 @@ function App() {
             stage: 'New',
             start_date: adoptionDate,
             deadline: taskEnd,
-            milestone: 'Adoption Phase',
+            milestone: language === 'Spanish' ? 'Capacitación y Go-Live' : 'Training & Go-Live',
             parent_task: '',
             task_type: task.task_type || 'native'
           });
@@ -586,12 +586,26 @@ function App() {
               console.log(`✅ Adding ${aiTasks.length} AI tasks for phase:`, aiTasks[0]?.phase);
               aiTasks.forEach(task => {
                 // Determine milestone based on custom module or phase
-                let milestone = `${task.phase} Phase - AI Customized`;
+                const language = responses.language || 'English';
+                let milestone;
+
                 if (task.custom_module) {
-                  const language = responses.language || 'English';
+                  // Custom module tasks go to their module milestone
                   milestone = language === 'Spanish'
                     ? `Implementación de ${task.custom_module}`
                     : `Implementation of ${task.custom_module}`;
+                } else if (task.phase === 'Clarity') {
+                  // Clarity AI tasks go to "Mapeo de Procesos" milestone
+                  milestone = language === 'Spanish' ? 'Mapeo de Procesos' : 'Process Mapping';
+                } else if (task.phase === 'Implementation') {
+                  // Implementation AI tasks go to "Migración de Datos" milestone
+                  milestone = language === 'Spanish' ? 'Migración de Datos' : 'Data Migration';
+                } else if (task.phase === 'Adoption') {
+                  // Adoption AI tasks go to "Capacitación y Go-Live" milestone
+                  milestone = language === 'Spanish' ? 'Capacitación y Go-Live' : 'Training & Go-Live';
+                } else {
+                  // Fallback
+                  milestone = `${task.phase} Phase`;
                 }
 
                 plan.tasks.push({
