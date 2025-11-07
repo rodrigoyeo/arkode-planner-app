@@ -174,9 +174,136 @@
         },
         {
           "id": "hour_allocation_section",
-          "question": "Hour Allocation (Optional)",
+          "question": "Hour Allocation",
           "type": "section_header",
-          "conditional": "implementation_phase === true"
+          "conditional": "implementation_phase === true",
+          "help_text": "Allocate implementation hours per module. The sum should match your total implementation hours."
+        },
+        {
+          "id": "module_crm_hours",
+          "question": "→ CRM Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('CRM')",
+          "min": 0,
+          "placeholder": "e.g., 20"
+        },
+        {
+          "id": "module_sales_hours",
+          "question": "→ Sales Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('Sales')",
+          "min": 0,
+          "placeholder": "e.g., 25"
+        },
+        {
+          "id": "module_purchase_hours",
+          "question": "→ Purchase Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('Purchase')",
+          "min": 0,
+          "placeholder": "e.g., 15"
+        },
+        {
+          "id": "module_inventory_hours",
+          "question": "→ Inventory Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('Inventory')",
+          "min": 0,
+          "placeholder": "e.g., 20"
+        },
+        {
+          "id": "module_accounting_hours",
+          "question": "→ Accounting Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('Accounting')",
+          "min": 0,
+          "placeholder": "e.g., 30"
+        },
+        {
+          "id": "module_projects_hours",
+          "question": "→ Projects Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('Projects')",
+          "min": 0,
+          "placeholder": "e.g., 15"
+        },
+        {
+          "id": "module_fsm_hours",
+          "question": "→ Field Service Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('FSM')",
+          "min": 0,
+          "placeholder": "e.g., 15"
+        },
+        {
+          "id": "module_expenses_hours",
+          "question": "→ Expenses Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('Expenses')",
+          "min": 0,
+          "placeholder": "e.g., 10"
+        },
+        {
+          "id": "module_manufacturing_hours",
+          "question": "→ Manufacturing Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('Manufacturing')",
+          "min": 0,
+          "placeholder": "e.g., 40"
+        },
+        {
+          "id": "module_ecommerce_hours",
+          "question": "→ eCommerce Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('eCommerce')",
+          "min": 0,
+          "placeholder": "e.g., 30"
+        },
+        {
+          "id": "module_pos_hours",
+          "question": "→ Point of Sale Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('POS')",
+          "min": 0,
+          "placeholder": "e.g., 25"
+        },
+        {
+          "id": "module_hr_hours",
+          "question": "→ HR Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('HR')",
+          "min": 0,
+          "placeholder": "e.g., 20"
+        },
+        {
+          "id": "module_payroll_hours",
+          "question": "→ Payroll Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('Payroll')",
+          "min": 0,
+          "placeholder": "e.g., 25"
+        },
+        {
+          "id": "module_helpdesk_hours",
+          "question": "→ Helpdesk Module Hours",
+          "type": "number",
+          "required": false,
+          "conditional": "modules.includes('Helpdesk')",
+          "min": 0,
+          "placeholder": "e.g., 15"
         },
         {
           "id": "custom_modules_count",

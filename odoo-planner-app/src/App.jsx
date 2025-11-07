@@ -272,23 +272,28 @@ function App() {
           const moduleTasks = moduleData.implementation_tasks;
           const totalEstimatedHours = moduleTasks.reduce((sum, t) => sum + t.estimated_hours, 0);
 
-          // Get module-specific hours if detailed allocation is enabled
-          let moduleHours;
-          if (responses.use_detailed_hours) {
-            // Map module names to hour field IDs
-            const moduleHourMap = {
-              'CRM': responses.crm_hours,
-              'Sales': responses.sales_hours,
-              'Purchase': responses.purchase_hours,
-              'Inventory': responses.inventory_hours,
-              'Accounting': responses.accounting_hours,
-              'Projects': responses.projects_hours,
-              'FSM': responses.fsm_hours,
-              'Expenses': responses.expenses_hours
-            };
-            moduleHours = moduleHourMap[moduleName] || (hoursForModules / selectedModules.length);
-          } else {
-            // Distribute evenly if no detailed allocation
+          // Get module-specific hours from allocation fields
+          const moduleHourMap = {
+            'CRM': responses.module_crm_hours,
+            'Sales': responses.module_sales_hours,
+            'Purchase': responses.module_purchase_hours,
+            'Inventory': responses.module_inventory_hours,
+            'Accounting': responses.module_accounting_hours,
+            'Projects': responses.module_projects_hours,
+            'FSM': responses.module_fsm_hours,
+            'Expenses': responses.module_expenses_hours,
+            'Manufacturing': responses.module_manufacturing_hours,
+            'eCommerce': responses.module_ecommerce_hours,
+            'POS': responses.module_pos_hours,
+            'HR': responses.module_hr_hours,
+            'Payroll': responses.module_payroll_hours,
+            'Helpdesk': responses.module_helpdesk_hours
+          };
+
+          // Use allocated hours if specified, otherwise distribute evenly
+          let moduleHours = parseFloat(moduleHourMap[moduleName]);
+          if (!moduleHours || moduleHours === 0) {
+            // If no hours allocated for this module, distribute remaining hours evenly
             moduleHours = hoursForModules / selectedModules.length;
           }
 
@@ -886,6 +891,113 @@ function App() {
                   )}
                 </div>
               ))}
+
+              {/* Budget Tracker for Implementation Hours */}
+              {currentSectionData.id === 'scope_and_hours' && responses.implementation_phase && responses.implementation_hours && (
+                <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                  <h3 className="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5" />
+                    Implementation Hours Budget Tracker
+                  </h3>
+
+                  {(() => {
+                    const totalBudget = parseFloat(responses.implementation_hours) || 0;
+
+                    // Calculate allocated hours for Odoo modules
+                    const moduleFields = [
+                      'module_crm_hours', 'module_sales_hours', 'module_purchase_hours',
+                      'module_inventory_hours', 'module_accounting_hours', 'module_projects_hours',
+                      'module_fsm_hours', 'module_expenses_hours', 'module_manufacturing_hours',
+                      'module_ecommerce_hours', 'module_pos_hours', 'module_hr_hours',
+                      'module_payroll_hours', 'module_helpdesk_hours'
+                    ];
+
+                    let allocatedModuleHours = 0;
+                    moduleFields.forEach(field => {
+                      allocatedModuleHours += parseFloat(responses[field]) || 0;
+                    });
+
+                    // Calculate custom module hours
+                    let allocatedCustomHours = 0;
+                    const customModulesCount = parseInt(responses.custom_modules_count) || 0;
+                    for (let i = 1; i <= customModulesCount; i++) {
+                      allocatedCustomHours += parseFloat(responses[`custom_module_${i}_hours`]) || 0;
+                    }
+
+                    // Calculate migration hours
+                    const migrationHours = parseFloat(responses.migration_hours) || 0;
+
+                    const totalAllocated = allocatedModuleHours + allocatedCustomHours + migrationHours;
+                    const remaining = totalBudget - totalAllocated;
+                    const percentageUsed = totalBudget > 0 ? (totalAllocated / totalBudget) * 100 : 0;
+
+                    const isOverBudget = remaining < 0;
+                    const isOnTrack = remaining >= 0 && remaining <= totalBudget * 0.1;
+                    const hasRoomLeft = remaining > totalBudget * 0.1;
+
+                    return (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div className="text-center">
+                            <div className="text-gray-600">Total Budget</div>
+                            <div className="text-xl font-bold text-gray-900">{totalBudget}h</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-gray-600">Allocated</div>
+                            <div className="text-xl font-bold text-blue-600">{totalAllocated}h</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-gray-600">Remaining</div>
+                            <div className={`text-xl font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
+                              {remaining}h
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all duration-300 ${
+                              isOverBudget ? 'bg-red-500' : isOnTrack ? 'bg-green-500' : 'bg-blue-500'
+                            }`}
+                            style={{ width: `${Math.min(percentageUsed, 100)}%` }}
+                          />
+                        </div>
+
+                        <div className="text-xs text-gray-600 space-y-1">
+                          {allocatedModuleHours > 0 && (
+                            <div>• Odoo Modules: {allocatedModuleHours}h</div>
+                          )}
+                          {allocatedCustomHours > 0 && (
+                            <div>• Custom Modules: {allocatedCustomHours}h</div>
+                          )}
+                          {migrationHours > 0 && (
+                            <div>• Data Migration: {migrationHours}h</div>
+                          )}
+                        </div>
+
+                        {isOverBudget && (
+                          <div className="flex items-start gap-2 text-sm text-red-700 bg-red-100 p-2 rounded">
+                            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span>Over budget by {Math.abs(remaining)}h. Consider reducing hours or increasing total budget.</span>
+                          </div>
+                        )}
+                        {isOnTrack && (
+                          <div className="flex items-start gap-2 text-sm text-green-700 bg-green-100 p-2 rounded">
+                            <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span>Perfect! Hours are fully allocated.</span>
+                          </div>
+                        )}
+                        {hasRoomLeft && totalAllocated > 0 && (
+                          <div className="flex items-start gap-2 text-sm text-blue-700 bg-blue-100 p-2 rounded">
+                            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span>You have {remaining}h unallocated. These will be distributed evenly across modules.</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
 
             {/* Navigation */}
