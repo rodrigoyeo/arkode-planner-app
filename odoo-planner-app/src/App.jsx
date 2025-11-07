@@ -131,6 +131,16 @@ function App() {
     }));
   };
 
+  // Generic multiselect toggle handler for any field
+  const handleMultiselectToggle = (fieldId, value) => {
+    setResponses(prev => ({
+      ...prev,
+      [fieldId]: prev[fieldId]?.includes(value)
+        ? prev[fieldId].filter(v => v !== value)
+        : [...(prev[fieldId] || []), value]
+    }));
+  };
+
   const handleNext = () => {
     if (currentSection < visibleSections.length - 1) {
       setCurrentSection(currentSection + 1);
@@ -853,6 +863,10 @@ function App() {
         // Check if this is the modules question (for hour allocation)
         const isModulesQuestion = question.id === 'modules';
 
+        // Get the correct field for this multiselect question
+        const multiselectFieldId = question.id;
+        const multiselectValues = responses[multiselectFieldId] || [];
+
         return (
           <div>
             <div className="grid grid-cols-2 gap-3 mb-3">
@@ -860,7 +874,7 @@ function App() {
                 const optionValue = typeof option === 'string' ? option : option.value;
                 const optionLabel = typeof option === 'string' ? option : option.label;
                 const optionDesc = typeof option === 'object' ? option.description : null;
-                const isSelected = responses.modules?.includes(optionValue);
+                const isSelected = multiselectValues.includes(optionValue);
 
                 // Get the hour field ID for this module
                 const hourFieldId = `module_${optionValue.toLowerCase()}_hours`;
@@ -877,7 +891,7 @@ function App() {
                   >
                     <button
                       type="button"
-                      onClick={() => handleModuleToggle(optionValue)}
+                      onClick={() => handleMultiselectToggle(multiselectFieldId, optionValue)}
                       className="w-full text-left"
                     >
                       <div className="font-semibold text-sm">{optionLabel}</div>
@@ -955,7 +969,7 @@ function App() {
                 max="10"
                 className="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
-              <p className="text-xs text-gray-500 mt-1">⚠️ Enter MODULE NAMES (e.g., "Backlog Facturación", "Workflow Aprobaciones"), NOT team member names!</p>
+              <p className="text-xs text-gray-500 mt-1">Custom modules beyond standard Odoo (e.g., Backlog Facturación, Workflow Aprobaciones)</p>
             </div>
 
             {/* Custom module cards - matching EXACT style of standard modules */}
@@ -980,7 +994,7 @@ function App() {
                         placeholder={`e.g., Backlog Facturación`}
                         className="w-full px-0 py-0 text-sm font-semibold bg-transparent text-white placeholder-orange-200 border-none focus:ring-0 focus:outline-none mb-1"
                       />
-                      <div className="text-xs text-orange-100 mb-2">⚠️ Module name (NOT team member)</div>
+                      <div className="text-xs text-orange-100 mb-2">Custom development</div>
 
                       {/* Hour input section - same as standard modules */}
                       <div className="mt-2 pt-2 border-t border-orange-400">
