@@ -184,6 +184,24 @@ function App() {
         const selectedModules = responses.modules;
         const language = responses.language || 'English';
 
+        // Calculate custom development hours first (if needed)
+        let customDevHours = 0;
+        if (responses.customizations === 'Yes') {
+          const customTasks = customDevTemplate.custom_development.tasks;
+          const customizationScope = responses.customization_scope || '';
+
+          customTasks.forEach(task => {
+            let hours = task.estimated_hours;
+            if (task.adjustable && customizationScope.length > 100) {
+              hours = Math.min(80, Math.max(20, Math.round(customizationScope.length / 5)));
+            }
+            customDevHours += hours;
+          });
+        }
+
+        // Reserve hours for custom development, distribute rest to modules
+        const hoursForModules = Math.max(0, implementationHours - customDevHours);
+
         // Calculate implementation duration (assume 40h/week per FTE)
         const implementationWeeks = Math.ceil(implementationHours / 40);
         const implementationEndDate = addWeeks(clarityEndDate, implementationWeeks);
@@ -198,9 +216,9 @@ function App() {
           const moduleTasks = moduleData.implementation_tasks;
           const totalEstimatedHours = moduleTasks.reduce((sum, t) => sum + t.estimated_hours, 0);
 
-          // Distribute hours proportionally or use module-specific allocation
+          // Distribute remaining hours (after custom dev) proportionally among modules
           const moduleHours = responses.module_hours?.[moduleName] ||
-                             (implementationHours / selectedModules.length);
+                             (hoursForModules / selectedModules.length);
           const hourMultiplier = moduleHours > 0 ? moduleHours / totalEstimatedHours : 1;
 
           moduleTasks.forEach((task, taskIndex) => {
@@ -360,28 +378,38 @@ function App() {
 
       // Generate AI-customized tasks if enabled
       if (responses.enable_ai_customization !== false) {
-        console.log('Generating AI-customized tasks...');
+        console.log('🤖 AI Customization is ENABLED');
+        console.log('📝 Checking for API keys...');
+        console.log('Claude Key:', import.meta.env.VITE_CLAUDE_API_KEY ? '✅ Found' : '❌ Not found');
+        console.log('OpenAI Key:', import.meta.env.VITE_OPENAI_API_KEY ? '✅ Found' : '❌ Not found');
 
         try {
           const aiTasksPromises = [];
 
           // Generate AI tasks for each enabled phase
           if (responses.clarity_phase) {
+            console.log('🔄 Requesting AI tasks for Clarity phase...');
             aiTasksPromises.push(generateCustomTasks(responses, 'clarity'));
           }
           if (responses.implementation_phase) {
+            console.log('🔄 Requesting AI tasks for Implementation phase...');
             aiTasksPromises.push(generateCustomTasks(responses, 'implementation'));
           }
           if (responses.adoption_phase) {
+            console.log('🔄 Requesting AI tasks for Adoption phase...');
             aiTasksPromises.push(generateCustomTasks(responses, 'adoption'));
           }
 
           // Wait for all AI tasks to be generated
+          console.log('⏳ Waiting for AI responses...');
           const aiTasksResults = await Promise.all(aiTasksPromises);
+          console.log('✅ AI responses received:', aiTasksResults);
 
           // Add AI tasks to plan
+          let totalAITasks = 0;
           aiTasksResults.forEach(aiTasks => {
             if (aiTasks && aiTasks.length > 0) {
+              console.log(`✅ Adding ${aiTasks.length} AI tasks for phase:`, aiTasks[0]?.phase);
               aiTasks.forEach(task => {
                 plan.tasks.push({
                   id: taskId++,
@@ -400,15 +428,25 @@ function App() {
                   parent_task: '',
                   task_type: 'ai_generated'
                 });
+                totalAITasks++;
               });
             }
           });
 
-          console.log(`Added ${aiTasksResults.flat().length} AI-customized tasks`);
+          if (totalAITasks > 0) {
+            console.log(`✅ SUCCESS: Added ${totalAITasks} AI-customized tasks!`);
+            alert(`✅ AI Customization: Generated ${totalAITasks} context-specific tasks!`);
+          } else {
+            console.warn('⚠️ WARNING: No AI tasks were generated. Check API key configuration.');
+            alert('⚠️ AI Customization: No tasks generated. Check console for details.\n\nUsing template tasks only.');
+          }
         } catch (error) {
-          console.error('Error generating AI tasks:', error);
+          console.error('❌ ERROR generating AI tasks:', error);
+          alert(`❌ AI Error: ${error.message}\n\nFalling back to template tasks only.`);
           // Continue with template tasks even if AI fails
         }
+      } else {
+        console.log('🚫 AI Customization is DISABLED by user');
       }
 
       setGeneratedPlan(plan);
