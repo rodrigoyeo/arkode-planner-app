@@ -505,6 +505,15 @@ function App() {
             if (aiTasks && aiTasks.length > 0) {
               console.log(`✅ Adding ${aiTasks.length} AI tasks for phase:`, aiTasks[0]?.phase);
               aiTasks.forEach(task => {
+                // Determine milestone based on custom module or phase
+                let milestone = `${task.phase} Phase - AI Customized`;
+                if (task.custom_module) {
+                  const language = responses.language || 'English';
+                  milestone = language === 'Spanish'
+                    ? `Implementación de ${task.custom_module}`
+                    : `Implementation of ${task.custom_module}`;
+                }
+
                 plan.tasks.push({
                   id: taskId++,
                   title: task.name,
@@ -514,11 +523,12 @@ function App() {
                   category: task.category || 'AI Generated',
                   tags: task.tags || [task.phase],
                   phase: task.phase,
+                  module: task.custom_module || '',
                   assignee: responses.project_manager || '',
                   stage: 'New',
                   start_date: '',
                   deadline: '',
-                  milestone: `${task.phase} Phase - AI Customized`,
+                  milestone: milestone,
                   parent_task: '',
                   task_type: 'ai_generated'
                 });
@@ -728,6 +738,9 @@ function App() {
           : question.options.filter((opt, idx) => opt.popular || idx < showMoreThreshold);
         const hasMoreOptions = question.options.length > showMoreThreshold;
 
+        // Check if this is the modules question (for hour allocation)
+        const isModulesQuestion = question.id === 'modules';
+
         return (
           <div>
             <div className="grid grid-cols-2 gap-3 mb-3">
@@ -735,27 +748,51 @@ function App() {
                 const optionValue = typeof option === 'string' ? option : option.value;
                 const optionLabel = typeof option === 'string' ? option : option.label;
                 const optionDesc = typeof option === 'object' ? option.description : null;
+                const isSelected = responses.modules?.includes(optionValue);
+
+                // Get the hour field ID for this module
+                const hourFieldId = `module_${optionValue.toLowerCase()}_hours`;
+                const allocatedHours = responses[hourFieldId] || '';
 
                 return (
-                  <button
+                  <div
                     key={optionValue}
-                    type="button"
-                    onClick={() => handleModuleToggle(optionValue)}
-                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
-                      responses.modules?.includes(optionValue)
+                    className={`p-3 rounded-lg border-2 transition-colors ${
+                      isSelected
                         ? 'bg-purple-600 text-white border-purple-600'
                         : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
                     }`}
                   >
-                    <div className="font-semibold text-sm">{optionLabel}</div>
-                    {optionDesc && (
-                      <div className={`text-xs mt-1 ${
-                        responses.modules?.includes(optionValue) ? 'text-purple-100' : 'text-gray-500'
-                      }`}>
-                        {optionDesc}
+                    <button
+                      type="button"
+                      onClick={() => handleModuleToggle(optionValue)}
+                      className="w-full text-left"
+                    >
+                      <div className="font-semibold text-sm">{optionLabel}</div>
+                      {optionDesc && (
+                        <div className={`text-xs mt-1 ${
+                          isSelected ? 'text-purple-100' : 'text-gray-500'
+                        }`}>
+                          {optionDesc}
+                        </div>
+                      )}
+                    </button>
+
+                    {/* Hour input - only show if module is selected and in implementation phase */}
+                    {isModulesQuestion && isSelected && responses.implementation_phase && (
+                      <div className="mt-2 pt-2 border-t border-purple-400" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="number"
+                          value={allocatedHours}
+                          onChange={(e) => handleResponseChange(hourFieldId, e.target.value)}
+                          placeholder="Hours"
+                          min="0"
+                          className="w-full px-2 py-1 text-sm rounded border border-purple-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                        <div className="text-xs text-purple-100 mt-1">Allocated hours</div>
                       </div>
                     )}
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -784,6 +821,68 @@ function App() {
             <h3 className="text-lg font-bold text-gray-900 mb-2">{question.question}</h3>
             {question.help_text && (
               <p className="text-sm text-gray-600">{question.help_text}</p>
+            )}
+          </div>
+        );
+
+      case 'custom_modules':
+        const customModulesCount = parseInt(responses.custom_modules_count) || 0;
+
+        return (
+          <div className="space-y-4">
+            {/* Number of custom modules selector */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                How many custom modules do you need?
+              </label>
+              <input
+                type="number"
+                value={responses.custom_modules_count || 0}
+                onChange={(e) => handleResponseChange('custom_modules_count', e.target.value)}
+                min="0"
+                max="10"
+                className="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">Custom modules beyond standard Odoo (e.g., I+D module, special workflows)</p>
+            </div>
+
+            {/* Custom module cards - matching the style of standard modules */}
+            {customModulesCount > 0 && (
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                {Array.from({ length: customModulesCount }, (_, i) => i + 1).map(num => {
+                  const nameField = `custom_module_${num}_name`;
+                  const hoursField = `custom_module_${num}_hours`;
+                  const moduleName = responses[nameField] || '';
+                  const moduleHours = responses[hoursField] || '';
+
+                  return (
+                    <div
+                      key={num}
+                      className="p-3 rounded-lg border-2 border-purple-600 bg-orange-50"
+                    >
+                      <div className="font-semibold text-sm text-gray-900 mb-2">
+                        Custom Module {num}
+                      </div>
+                      <input
+                        type="text"
+                        value={moduleName}
+                        onChange={(e) => handleResponseChange(nameField, e.target.value)}
+                        placeholder="Module name"
+                        className="w-full px-2 py-1 text-sm rounded border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent mb-2"
+                      />
+                      <input
+                        type="number"
+                        value={moduleHours}
+                        onChange={(e) => handleResponseChange(hoursField, e.target.value)}
+                        placeholder="Hours"
+                        min="0"
+                        className="w-full px-2 py-1 text-sm rounded border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      />
+                      <div className="text-xs text-gray-600 mt-1">Allocated hours</div>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
         );
@@ -1268,25 +1367,33 @@ function App() {
                         currentDate = moduleEnd;
                       });
 
-                      // Custom Development Milestone (if needed)
-                      if (responses.customizations === 'Yes') {
-                        const customWeeks = 2; // Estimate
-                        const customEnd = addWeeks(currentDate, customWeeks);
+                      // Custom Module Milestones (one per custom module)
+                      const customModulesCount = parseInt(responses.custom_modules_count) || 0;
+                      if (customModulesCount > 0) {
+                        for (let i = 1; i <= customModulesCount; i++) {
+                          const moduleName = responses[`custom_module_${i}_name`];
+                          const moduleHours = parseFloat(responses[`custom_module_${i}_hours`]) || 0;
 
-                        milestones.push({
-                          name: language === 'Spanish'
-                            ? 'Implementación de Módulos Personalizados'
-                            : 'Custom Module Implementation',
-                          name_en: 'Custom Module Implementation',
-                          name_es: 'Implementación de Módulos Personalizados',
-                          start: currentDate,
-                          end: customEnd,
-                          deliverables: language === 'Spanish'
-                            ? 'Desarrollo personalizado, Testing e integración'
-                            : 'Custom development, Testing and integration'
-                        });
+                          if (moduleName) {
+                            const customWeeks = Math.ceil(moduleHours / 40) || 1;
+                            const customEnd = addWeeks(currentDate, customWeeks);
 
-                        currentDate = customEnd;
+                            milestones.push({
+                              name: language === 'Spanish'
+                                ? `Implementación de ${moduleName}`
+                                : `Implementation of ${moduleName}`,
+                              name_en: `Implementation of ${moduleName}`,
+                              name_es: `Implementación de ${moduleName}`,
+                              start: currentDate,
+                              end: customEnd,
+                              deliverables: language === 'Spanish'
+                                ? `Desarrollo de ${moduleName}, Testing e integración`
+                                : `${moduleName} development, Testing and integration`
+                            });
+
+                            currentDate = customEnd;
+                          }
+                        }
                       }
 
                       // Migration Milestone (if needed)

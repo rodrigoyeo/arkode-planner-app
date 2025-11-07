@@ -383,6 +383,7 @@ CRITICAL RULES:
 - Return ONLY a valid JSON object with a "tasks" array - NO other text before or after
 - Estimated hours must be whole numbers only (no decimals)
 - Each task must have: name, description, estimated_hours, priority, category, tags (array)
+- For custom module tasks, include "custom_module" field with the exact module name
 
 Context:
 Industry: ${context.industry}
@@ -489,10 +490,13 @@ Return format (example in ${language}):
       "estimated_hours": 16,
       "priority": "${isSpanish ? 'Alta' : 'High'}",
       "category": "${examples.customModule.category}",
-      "tags": ${JSON.stringify(examples.customModule.tags)}
+      "tags": ${JSON.stringify(examples.customModule.tags)},
+      "custom_module": "I+D Module"
     }
   ]
-}`;
+}
+
+IMPORTANT: For each custom module task, include the "custom_module" field with the EXACT module name from the list above.`;
   }
 
   if (phase === 'adoption') {
