@@ -237,6 +237,11 @@ function buildContext(responses) {
     country: responses.country || '',
     language: responses.language || 'English',
 
+    // Hour budgets
+    clarity_hours: responses.clarity_hours || 40,
+    implementation_hours: responses.implementation_hours || 100,
+    adoption_hours: responses.adoption_hours || 20,
+
     // Clarity phase context
     current_systems: responses.current_systems || '',
     pain_points: responses.pain_points || '',
@@ -266,15 +271,13 @@ function buildContext(responses) {
  * Build AI prompt based on phase and context
  */
 function buildPrompt(context, phase, language) {
-  const baseInstructions = `You are an expert Odoo implementation consultant at Arkode. Generate 3-5 specific, actionable tasks for the ${phase} phase.
+  const baseInstructions = `You are an expert Odoo implementation consultant at Arkode.
 
-IMPORTANT RULES:
-- Tasks must be SPECIFIC to this project (not generic)
-- Use the provided context to create relevant tasks
-- Estimated hours must be whole numbers only (no decimals)
-- Return ONLY a valid JSON array, no other text
+CRITICAL RULES:
+- Return ONLY a valid JSON object with a "tasks" array - NO other text before or after
 - Tasks must be in ${language} language
-- Each task must have: name, description, estimated_hours, priority, category, tags
+- Estimated hours must be whole numbers only (no decimals)
+- Each task must have: name, description, estimated_hours, priority, category, tags (array)
 
 Context:
 Industry: ${context.industry}
@@ -288,44 +291,73 @@ Current Systems: ${context.current_systems}
 Pain Points: ${context.pain_points}
 Core Processes: ${context.core_processes}
 
-Generate 3-5 specific Clarity phase tasks that:
-- Address the pain points mentioned
-- Cover migration planning from current systems
-- Map the core business processes mentioned
-- Are specific to the ${context.industry} industry
-- Include discovery workshops for critical areas
+TASK: Generate 2-3 specific Clarity phase discovery tasks ONLY.
 
-Example format:
-[
-  {
-    "name": "Map [specific process] from [current system]",
-    "description": "Detailed description of what needs to be documented and why",
-    "estimated_hours": 8,
-    "priority": "High",
-    "category": "Process Mapping",
-    "tags": ["Clarity", "Discovery"]
-  }
-]
+BUDGET CONSTRAINT: Total hours for ALL tasks must NOT exceed ${Math.round(context.clarity_hours * 0.3)} hours (30% of Clarity budget is for AI tasks, rest is template).
 
-Return only the JSON array:`;
+Focus on:
+- Specific process mapping from current systems mentioned
+- Workshops addressing the exact pain points listed
+- Discovery sessions for the core processes described
+
+DO NOT generate generic tasks. Use the specific systems, pain points, and processes mentioned above.
+
+Return format:
+{
+  "tasks": [
+    {
+      "name": "Mapear proceso específico desde [sistema actual]",
+      "description": "Detailed description",
+      "estimated_hours": 6,
+      "priority": "High",
+      "category": "Process Mapping",
+      "tags": ["Clarity", "Discovery"]
+    }
+  ]
+}`;
   }
 
   if (phase === 'implementation') {
+    // Calculate available hours for AI tasks (custom dev portion)
+    const customDevBudget = Math.round(context.implementation_hours * 0.5); // 50% for custom work
+
     return `${baseInstructions}
-Data Migration: ${context.data_migration_scope}
-Integrations: ${context.integration_list}
-Customizations: ${context.customization_scope}
+Data Migration Scope: ${context.data_migration_scope}
+Integration Requirements: ${context.integration_list || 'None'}
+Custom Development Required: ${context.customization_scope}
 Multi-company: ${context.multi_company} ${context.multi_company === 'Yes' ? `(${context.company_count} companies)` : ''}
 Multi-warehouse: ${context.multi_warehouse} ${context.multi_warehouse === 'Yes' ? `(${context.warehouse_count} warehouses)` : ''}
 
-Generate 3-5 specific Implementation phase tasks that:
-- Address complex data migration needs
-- Configure integrations mentioned
-- Handle multi-company/warehouse complexity
-- Are specific to the ${context.industry} industry
-- Focus on the selected modules: ${context.modules.join(', ')}
+TASK: Generate 2-4 specific Implementation tasks for DATA MIGRATION and CUSTOM DEVELOPMENT only.
 
-Return only the JSON array:`;
+BUDGET CONSTRAINT: Total hours for ALL tasks must NOT exceed ${customDevBudget} hours.
+
+IMPORTANT - Generate tasks ONLY for:
+1. Data migration from systems mentioned (if scope provided)
+2. Custom module development described in "Custom Development Required" section
+3. Third-party integrations listed (if any)
+
+DO NOT generate tasks for:
+- Standard Odoo module configuration (CRM, Sales, etc.) - templates handle this
+- Training or user adoption - that's the Adoption phase
+- Generic setup tasks
+
+Break down custom modules into logical sub-tasks (design, development, testing, integration).
+Each task should be 15-40 hours maximum.
+
+Return format:
+{
+  "tasks": [
+    {
+      "name": "Migración de datos de [sistema específico]",
+      "description": "Detailed migration plan",
+      "estimated_hours": 30,
+      "priority": "High",
+      "category": "Data Migration",
+      "tags": ["Implementation", "Migration"]
+    }
+  ]
+}`;
   }
 
   if (phase === 'adoption') {
@@ -333,19 +365,51 @@ Return only the JSON array:`;
 User Count: ${context.user_count}
 User Breakdown: ${context.user_breakdown}
 Training Format: ${context.training_format}
-Pain Points to Address: ${context.pain_points}
 
-Generate 3-5 specific Adoption phase tasks that:
-- Create role-based training for user groups mentioned
-- Address change management for pain points
-- Are specific to the ${context.industry} industry
-- Match the ${context.training_format} training format
-- Focus on process adoption for: ${context.core_processes}
+TASK: Generate 2-4 specific Adoption phase tasks focused on TRAINING and CHANGE MANAGEMENT only.
 
-Return only the JSON array:`;
+BUDGET CONSTRAINT: Total hours for ALL tasks must NOT exceed ${Math.round(context.adoption_hours * 0.5)} hours (50% of Adoption budget).
+
+CRITICAL - Generate tasks ONLY for:
+1. Role-based training sessions for user groups mentioned
+2. Change management workshops
+3. Documentation creation
+4. Go-live support planning
+
+DO NOT generate tasks for:
+- Building features or modules (that's Implementation phase!)
+- Configuring integrations (that's Implementation phase!)
+- Data migration (that's Implementation phase!)
+- System development (that's Implementation phase!)
+
+Focus on how to TRAIN users on the already-built system, NOT on building new features.
+
+Example of CORRECT Adoption tasks:
+- "Capacitación para equipo de ventas en módulos CRM y Ventas" (8h)
+- "Taller de gestión del cambio para líderes" (4h)
+- "Documentación de procesos y guías de usuario" (6h)
+
+Example of WRONG Adoption tasks (these are Implementation!):
+- "Integración de inventario en tiempo real" ❌
+- "Sistema de geolocalización" ❌
+- "Dashboard de rentabilidad" ❌
+
+Return format:
+{
+  "tasks": [
+    {
+      "name": "Capacitación por roles para [grupo de usuarios]",
+      "description": "Training session details",
+      "estimated_hours": 8,
+      "priority": "High",
+      "category": "Training",
+      "tags": ["Adoption", "Training"]
+    }
+  ]
+}`;
   }
 
-  return baseInstructions + '\nReturn only the JSON array:';
+  return baseInstructions + '\nReturn only the JSON object with tasks array.';
 }
 
 /**
