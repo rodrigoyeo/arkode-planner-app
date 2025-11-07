@@ -28,7 +28,7 @@
         "estimated_hours": 2,
         "priority": "High",
         "category": "Project Management",
-        "tags": ["Clarity", "Kickoff", "Week 1"],
+        "tags": ["Kickoff", "Meeting", "Stakeholder Alignment"],
         "week": 1,
         "task_type": "native"
       },
@@ -40,7 +40,7 @@
         "estimated_hours": 8,
         "priority": "High",
         "category": "Requirements Gathering",
-        "tags": ["Clarity", "Discovery", "Week 1-2"],
+        "tags": ["Discovery", "Requirements", "Process Consultant"],
         "week": 1,
         "task_type": "native"
       },
@@ -52,7 +52,7 @@
         "estimated_hours": 12,
         "priority": "High",
         "category": "Process Analysis",
-        "tags": ["Clarity", "Process Mapping", "Week 1-2"],
+        "tags": ["Process Mapping", "As-Is", "Process Consultant"],
         "week": 1,
         "task_type": "native"
       },
@@ -64,7 +64,7 @@
         "estimated_hours": 4,
         "priority": "Medium",
         "category": "Data Analysis",
-        "tags": ["Clarity", "Data Migration", "Week 2"],
+        "tags": ["Data Migration", "Assessment", "Odoo Developer"],
         "week": 2,
         "task_type": "native"
       },
@@ -76,19 +76,7 @@
         "estimated_hours": 4,
         "priority": "Medium",
         "category": "Integration Analysis",
-        "tags": ["Clarity", "Integrations", "Week 2"],
-        "week": 2,
-        "task_type": "native"
-      },
-      {
-        "name": "Gap Analysis Workshop",
-        "name_es": "Taller de Análisis de Brechas",
-        "description": "Identify gaps between current processes and Odoo standard functionality",
-        "description_es": "Identificar brechas entre procesos actuales y funcionalidad estándar de Odoo",
-        "estimated_hours": 6,
-        "priority": "High",
-        "category": "Analysis",
-        "tags": ["Clarity", "Gap Analysis", "Week 2"],
+        "tags": ["Integrations", "Requirements", "Odoo Developer"],
         "week": 2,
         "task_type": "native"
       },
@@ -100,7 +88,7 @@
         "estimated_hours": 10,
         "priority": "High",
         "category": "Process Design",
-        "tags": ["Clarity", "Process Design", "Week 3"],
+        "tags": ["Process Design", "To-Be", "Process Consultant"],
         "week": 3,
         "task_type": "native"
       },
@@ -110,9 +98,9 @@
         "description": "Document customizations needed beyond standard Odoo functionality",
         "description_es": "Documentar personalizaciones necesarias más allá de la funcionalidad estándar de Odoo",
         "estimated_hours": 6,
-        "priority": "High",
+        "priority": "Medium",
         "category": "Scoping",
-        "tags": ["Clarity", "Customization", "Week 3"],
+        "tags": ["Customization", "Scoping", "Odoo Developer"],
         "week": 3,
         "task_type": "native"
       },
@@ -124,7 +112,7 @@
         "estimated_hours": 3,
         "priority": "Medium",
         "category": "Security",
-        "tags": ["Clarity", "Security", "Week 3"],
+        "tags": ["Security", "User Roles", "Odoo Developer"],
         "week": 3,
         "task_type": "native"
       },
@@ -134,9 +122,9 @@
         "description": "Present optimized processes to client and obtain approval before creating Master of Implementation",
         "description_es": "Presentar procesos optimizados al cliente y obtener aprobación antes de crear el Master of Implementation",
         "estimated_hours": 3,
-        "priority": "High",
+        "priority": "Medium",
         "category": "Review",
-        "tags": ["Clarity", "Review", "Week 3"],
+        "tags": ["Client Approval", "Review", "Process Consultant"],
         "week": 3,
         "task_type": "native"
       },
@@ -148,7 +136,7 @@
         "estimated_hours": 16,
         "priority": "High",
         "category": "Master of Implementation",
-        "tags": ["Clarity", "Master", "Week 4"],
+        "tags": ["Master of Implementation", "Prototype", "Process Consultant"],
         "week": 4,
         "task_type": "native"
       },
@@ -160,19 +148,7 @@
         "estimated_hours": 4,
         "priority": "High",
         "category": "Master of Implementation",
-        "tags": ["Clarity", "Master", "Presentation", "Week 4"],
-        "week": 4,
-        "task_type": "native"
-      },
-      {
-        "name": "Clarity Phase Sign-off",
-        "name_es": "Aprobación de Fase Clarity",
-        "description": "Final approval from stakeholders to proceed to implementation phase",
-        "description_es": "Aprobación final de los stakeholders para proceder a la fase de implementación",
-        "estimated_hours": 2,
-        "priority": "High",
-        "category": "Project Management",
-        "tags": ["Clarity", "Sign-off", "Week 4"],
+        "tags": ["Master of Implementation", "Presentation", "Client Approval"],
         "week": 4,
         "task_type": "native"
       }

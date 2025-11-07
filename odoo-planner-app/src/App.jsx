@@ -175,6 +175,34 @@ function App() {
       let taskId = 1;
       const projectStartDate = responses.project_start_date || new Date().toISOString().split('T')[0];
 
+      // Helper function to intelligently assign tasks to team members based on role tags
+      const assignTaskToTeamMember = (taskTags, taskPhase) => {
+        const teamMembers = responses.team_members || [];
+        const processConsultants = teamMembers.filter(member =>
+          member === 'Luis Muñoz' || member === 'Ricardo Gomez' ||
+          member === 'Andres Solorzano' || member === 'Josue Torres'
+        );
+        const odooDeveloper = teamMembers.find(member => member === 'Jose Ruvalcaba');
+
+        // Check task tags for role requirements
+        const needsOdooDeveloper = taskTags.some(tag => tag === 'Odoo Developer');
+        const needsProcessConsultant = taskTags.some(tag => tag === 'Process Consultant');
+
+        // Assign based on role requirements
+        if (needsOdooDeveloper && odooDeveloper) {
+          return odooDeveloper;
+        } else if (needsProcessConsultant && processConsultants.length > 0) {
+          // Rotate through process consultants (simple round-robin by task ID)
+          return processConsultants[taskId % processConsultants.length];
+        } else if (processConsultants.length > 0) {
+          // Default to process consultant if available
+          return processConsultants[0];
+        }
+
+        // Fallback to project manager
+        return responses.project_manager || '';
+      };
+
       // Calculate phase end dates for sequencing
       const clarityEndDate = addWeeks(projectStartDate, 4); // 4 weeks for Clarity
 
@@ -195,6 +223,16 @@ function App() {
           const weekStart = addWeeks(projectStartDate, task.week - 1);
           const weekEnd = addWeeks(projectStartDate, task.week);
 
+          // Assign proper milestone name based on week and deliverable structure
+          let milestoneName;
+          if (task.week <= 2) {
+            milestoneName = language === 'Spanish' ? 'Mapeo de Procesos' : 'Process Mapping';
+          } else if (task.week === 3) {
+            milestoneName = language === 'Spanish' ? 'Hallazgos, Oportunidades y TO-BE' : 'Findings, Opportunities & TO-BE';
+          } else { // week 4
+            milestoneName = 'Master of Implementation';
+          }
+
           plan.tasks.push({
             id: taskId++,
             title: language === 'Spanish' ? task.name_es : task.name,
@@ -204,11 +242,11 @@ function App() {
             category: task.category,
             tags: task.tags,
             phase: 'Clarity',
-            assignee: responses.project_manager || '',
+            assignee: assignTaskToTeamMember(task.tags, 'Clarity'),
             stage: 'New',
             start_date: weekStart,
             deadline: weekEnd,
-            milestone: `Clarity Phase - Week ${task.week}`,
+            milestone: milestoneName,
             parent_task: '',
             task_type: task.task_type || 'native',
             week: task.week
@@ -338,7 +376,7 @@ function App() {
               tags: task.tags,
               phase: 'Implementation',
               module: moduleName,
-              assignee: responses.project_manager || '',
+              assignee: assignTaskToTeamMember(task.tags, 'Implementation'),
               stage: 'New',
               start_date: taskStart,
               deadline: taskEnd,
@@ -384,7 +422,7 @@ function App() {
               tags: task.tags,
               phase: 'Implementation',
               module: 'Custom Development',
-              assignee: responses.project_manager || '',
+              assignee: assignTaskToTeamMember(task.tags, 'Implementation'),
               stage: 'New',
               start_date: customDevDate,
               deadline: taskEnd,
@@ -460,7 +498,7 @@ function App() {
             category: task.category,
             tags: task.tags,
             phase: 'Adoption',
-            assignee: responses.project_manager || '',
+            assignee: assignTaskToTeamMember(task.tags, 'Adoption'),
             stage: 'New',
             start_date: adoptionDate,
             deadline: taskEnd,
@@ -500,7 +538,7 @@ function App() {
               category: 'Ongoing Support',
               tags: ['Adoption', 'Support', `Month ${month}`],
               phase: 'Adoption',
-              assignee: responses.project_manager || '',
+              assignee: assignTaskToTeamMember(['Adoption', 'Support', `Month ${month}`], 'Adoption'),
               stage: 'New',
               start_date: monthStart,
               deadline: monthEnd,
@@ -566,7 +604,7 @@ function App() {
                   tags: task.tags || [task.phase],
                   phase: task.phase,
                   module: task.custom_module || '',
-                  assignee: responses.project_manager || '',
+                  assignee: assignTaskToTeamMember(task.tags || [task.phase], task.phase),
                   stage: 'New',
                   start_date: '',
                   deadline: '',

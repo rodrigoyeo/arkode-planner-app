@@ -65,6 +65,20 @@
           "placeholder": "e.g., Luis Muñoz"
         },
         {
+          "id": "team_members",
+          "question": "Arkode Team Members",
+          "type": "multiselect",
+          "required": false,
+          "options": [
+            {"value": "Luis Muñoz", "label": "Luis Muñoz", "description": "Process Consultant", "role": "Process Consultant"},
+            {"value": "Ricardo Gomez", "label": "Ricardo Gomez", "description": "Process Consultant", "role": "Process Consultant"},
+            {"value": "Andres Solorzano", "label": "Andres Solorzano", "description": "Process Consultant", "role": "Process Consultant"},
+            {"value": "Josue Torres", "label": "Josue Torres", "description": "Process Consultant", "role": "Process Consultant"},
+            {"value": "Jose Ruvalcaba", "label": "Jose Ruvalcaba", "description": "Odoo Developer", "role": "Odoo Developer"}
+          ],
+          "help_text": "Select team members who will work on this project"
+        },
+        {
           "id": "project_start_date",
           "question": "Project Start Date",
           "type": "date",
