@@ -90,45 +90,59 @@ CRITICAL - Task naming requirements:
 
 ### ✅ 4. "Hours still an issue, because again put me a table in the questions, so I can fill it"
 
-**Status:** ✅ COMPLETE (commit 7afd74e)
+**Status:** ✅ COMPLETE (commits 7afd74e, 332115c)
 
 **What I Added:**
 
-New questionnaire section: **"Detailed Hour Allocation (Optional - Advanced)"**
+Completely redesigned questionnaire from 9 sections → 6 sections with integrated hour allocation:
+
+**New Section 2: "Scope & Hours"** - All in one place!
 
 ```
-☐ Do you want to specify hours per module/activity?
-  (If disabled, hours distribute evenly)
+☐ Clarity Phase (Discovery & Requirements)
+  → Clarity Phase Hours: [65] hours
 
-[When enabled, shows:]
+☐ Implementation Phase (System Build)
+  → Implementation Phase Hours: [165] hours
 
-Allocate Implementation Hours
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Custom Module Development: [80] hours
-Data Migration: [40] hours
+  How many custom modules do you need? [2]
 
-Module Hours:
-CRM Module: [10] hours
-Sales Module: [15] hours
-Purchase Module: [10] hours
-Inventory Module: [10] hours
-Accounting Module: [20] hours
-Projects Module: [15] hours
-FSM Module: [15] hours
-Expenses Module: [10] hours
+  → Custom Module 1 Name: [I+D Module]
+  → Custom Module 1 Hours: [80]
 
-Adoption Phase:
-Training: [8] hours
-Monthly Support Hours: [20] hours/month
+  → Custom Module 2 Name: [Custom Workflow]
+  → Custom Module 2 Hours: [40]
+
+  Which Odoo modules? [CRM, Sales, Purchase, ...]
+
+☐ Adoption Phase (Training & Go-Live)
+  → Adoption Phase Hours: [40] hours
 ```
+
+**What Was Fixed:**
+
+**Problem 1:** "Is not working. I was not able to distribute implementation hours"
+- **Root Cause:** Conditional logic couldn't parse `custom_modules_count >= 1`
+- **Fix:** Added support for >=, <=, >, < operators in `isQuestionVisible()`
+- **Result:** Fields now show/hide correctly ✅
+
+**Problem 2:** "questionnaire is becoming a Frankenstein—overloaded and difficult to complete"
+- **Root Cause:** 9 fragmented sections, hour allocation buried in "Advanced" section
+- **Fix:** Redesigned to 6 logical sections, integrated hours into main flow
+- **Result:** Clean, intuitive UX ✅
+
+**Problem 3:** "there could be more than one custom module"
+- **Root Cause:** Only single `customization_scope` textarea
+- **Fix:** Dynamic fields for up to 10 custom modules with individual names/hours
+- **Result:** Support for multiple custom modules ✅
 
 **Features:**
-- ✅ OPTIONAL: Skip to distribute evenly
-- ✅ CONDITIONAL: Only shows selected modules
-- ✅ FLEXIBLE: Works with any module combination
-- ✅ VALIDATES: Helps you stay within budget
+- ✅ MULTIPLE MODULES: Up to 10 custom modules with individual hours
+- ✅ CONDITIONAL: Fields appear when count >= 1
+- ✅ INTEGRATED: Hour allocation in main questionnaire flow
+- ✅ CLEAN UX: 6 sections instead of 9
 
-**Result:** You now have EXACT control over every hour!
+**Result:** You now have EXACT control over every hour with a user-friendly interface!
 
 ---
 
@@ -255,5 +269,12 @@ Same answers as before - check these improvements:
 ---
 
 **Branch:** `claude/odoo-implementation-planner-011CUqvLHbyg96f3qjACvM3d`
-**Latest Commit:** `7afd74e`
-**Status:** ALL FEEDBACK IMPLEMENTED - Ready to test! 🚀
+**Latest Commit:** `332115c`
+**Status:** ALL FEEDBACK IMPLEMENTED + UX REDESIGNED - Ready to test! 🚀
+
+**What Changed in v2 (commit 332115c):**
+- ✅ Fixed "not working" hour allocation (comparison operators added)
+- ✅ Fixed "Frankenstein" UX (9 sections → 6 sections)
+- ✅ Added multiple custom module support (up to 10 modules)
+- ✅ Integrated hour allocation into main questionnaire flow
+- ✅ Added section_header question type for better organization
