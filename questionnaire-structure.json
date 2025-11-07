@@ -360,6 +360,142 @@
     },
 
     {
+      "id": "detailed_hour_allocation",
+      "title": "Detailed Hour Allocation (Optional - Advanced)",
+      "description": "Specify hours for each module and activity. Leave blank to distribute evenly.",
+      "conditional": "implementation_phase === true",
+      "questions": [
+        {
+          "id": "use_detailed_hours",
+          "question": "Do you want to specify hours per module/activity?",
+          "type": "checkbox",
+          "required": false,
+          "default": false,
+          "help_text": "Enable this to control exactly how implementation hours are distributed. If disabled, hours will be distributed evenly across selected modules."
+        },
+        {
+          "id": "module_hour_allocation_info",
+          "question": "Allocate Implementation Hours",
+          "type": "info",
+          "conditional": "use_detailed_hours === true",
+          "content": "Specify hours for each component. The sum should equal your Implementation Phase hours."
+        },
+        {
+          "id": "custom_module_hours",
+          "question": "Custom Module Development",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && customizations === 'Yes'",
+          "min": 0,
+          "placeholder": "e.g., 80",
+          "help_text": "Hours for custom module development (I+D, specific customizations, etc.)"
+        },
+        {
+          "id": "migration_hours",
+          "question": "Data Migration",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && data_migration !== 'No'",
+          "min": 0,
+          "placeholder": "e.g., 40",
+          "help_text": "Hours for data migration from legacy systems"
+        },
+        {
+          "id": "crm_hours",
+          "question": "CRM Module",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && modules.includes('CRM')",
+          "min": 0,
+          "placeholder": "e.g., 20"
+        },
+        {
+          "id": "sales_hours",
+          "question": "Sales Module",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && modules.includes('Sales')",
+          "min": 0,
+          "placeholder": "e.g., 20"
+        },
+        {
+          "id": "purchase_hours",
+          "question": "Purchase Module",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && modules.includes('Purchase')",
+          "min": 0,
+          "placeholder": "e.g., 10"
+        },
+        {
+          "id": "inventory_hours",
+          "question": "Inventory Module",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && modules.includes('Inventory')",
+          "min": 0,
+          "placeholder": "e.g., 15"
+        },
+        {
+          "id": "accounting_hours",
+          "question": "Accounting Module",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && modules.includes('Accounting')",
+          "min": 0,
+          "placeholder": "e.g., 20"
+        },
+        {
+          "id": "projects_hours",
+          "question": "Projects Module",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && modules.includes('Projects')",
+          "min": 0,
+          "placeholder": "e.g., 15"
+        },
+        {
+          "id": "fsm_hours",
+          "question": "FSM (Field Service) Module",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && modules.includes('FSM')",
+          "min": 0,
+          "placeholder": "e.g., 15"
+        },
+        {
+          "id": "expenses_hours",
+          "question": "Expenses Module",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && modules.includes('Expenses')",
+          "min": 0,
+          "placeholder": "e.g., 10"
+        },
+        {
+          "id": "adoption_training_hours",
+          "question": "Training (Adoption Phase)",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && adoption_phase === true",
+          "min": 0,
+          "placeholder": "e.g., 8",
+          "help_text": "One-time training hours"
+        },
+        {
+          "id": "adoption_support_hours_monthly",
+          "question": "Monthly Support Hours (Adoption Phase)",
+          "type": "number",
+          "required": false,
+          "conditional": "use_detailed_hours === true && adoption_phase === true",
+          "min": 0,
+          "placeholder": "e.g., 20",
+          "help_text": "Support hours per month during adoption period"
+        }
+      ]
+    },
+
+    {
       "id": "clarity_details",
       "title": "Clarity Phase Details",
       "description": "Additional information for the Clarity phase",

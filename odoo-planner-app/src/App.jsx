@@ -187,20 +187,37 @@ function App() {
         // Calculate custom development hours first (if needed)
         let customDevHours = 0;
         if (responses.customizations === 'Yes') {
-          const customTasks = customDevTemplate.custom_development.tasks;
-          const customizationScope = responses.customization_scope || '';
+          if (responses.use_detailed_hours && responses.custom_module_hours) {
+            // Use user-specified custom module hours
+            customDevHours = parseFloat(responses.custom_module_hours);
+          } else if (!responses.enable_ai_customization) {
+            // Use hardcoded template (only if AI is disabled)
+            const customTasks = customDevTemplate.custom_development.tasks;
+            const customizationScope = responses.customization_scope || '';
 
-          customTasks.forEach(task => {
-            let hours = task.estimated_hours;
-            if (task.adjustable && customizationScope.length > 100) {
-              hours = Math.min(80, Math.max(20, Math.round(customizationScope.length / 5)));
-            }
-            customDevHours += hours;
-          });
+            customTasks.forEach(task => {
+              let hours = task.estimated_hours;
+              if (task.adjustable && customizationScope.length > 100) {
+                hours = Math.min(80, Math.max(20, Math.round(customizationScope.length / 5)));
+              }
+              customDevHours += hours;
+            });
+          } else {
+            // AI will handle custom dev, reserve 50% of implementation hours
+            customDevHours = implementationHours * 0.5;
+          }
         }
 
-        // Reserve hours for custom development, distribute rest to modules
-        const hoursForModules = Math.max(0, implementationHours - customDevHours);
+        // Add migration hours if specified
+        let migrationHours = 0;
+        if (responses.data_migration && responses.data_migration !== 'No') {
+          if (responses.use_detailed_hours && responses.migration_hours) {
+            migrationHours = parseFloat(responses.migration_hours);
+          }
+        }
+
+        // Reserve hours for custom development and migration, distribute rest to modules
+        const hoursForModules = Math.max(0, implementationHours - customDevHours - migrationHours);
 
         // Calculate implementation duration (assume 40h/week per FTE)
         const implementationWeeks = Math.ceil(implementationHours / 40);
@@ -216,9 +233,26 @@ function App() {
           const moduleTasks = moduleData.implementation_tasks;
           const totalEstimatedHours = moduleTasks.reduce((sum, t) => sum + t.estimated_hours, 0);
 
-          // Distribute remaining hours (after custom dev) proportionally among modules
-          const moduleHours = responses.module_hours?.[moduleName] ||
-                             (hoursForModules / selectedModules.length);
+          // Get module-specific hours if detailed allocation is enabled
+          let moduleHours;
+          if (responses.use_detailed_hours) {
+            // Map module names to hour field IDs
+            const moduleHourMap = {
+              'CRM': responses.crm_hours,
+              'Sales': responses.sales_hours,
+              'Purchase': responses.purchase_hours,
+              'Inventory': responses.inventory_hours,
+              'Accounting': responses.accounting_hours,
+              'Projects': responses.projects_hours,
+              'FSM': responses.fsm_hours,
+              'Expenses': responses.expenses_hours
+            };
+            moduleHours = moduleHourMap[moduleName] || (hoursForModules / selectedModules.length);
+          } else {
+            // Distribute evenly if no detailed allocation
+            moduleHours = hoursForModules / selectedModules.length;
+          }
+
           const hourMultiplier = moduleHours > 0 ? moduleHours / totalEstimatedHours : 1;
 
           moduleTasks.forEach((task, taskIndex) => {
@@ -678,6 +712,13 @@ function App() {
                 {showAllModules ? '▲ Show Less' : `▼ Show More (${question.options.length - visibleOptions.length} more modules)`}
               </button>
             )}
+          </div>
+        );
+
+      case 'info':
+        return (
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+            <p className="text-blue-800">{question.content || question.help_text}</p>
           </div>
         );
 
