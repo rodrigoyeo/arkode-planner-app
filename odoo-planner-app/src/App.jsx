@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, CheckCircle, Download, RefreshCw, ChevronRight, ChevronLeft, AlertCircle, Edit2, Check, X } from 'lucide-react';
+import { FileText, CheckCircle, Download, RefreshCw, ChevronRight, ChevronLeft, AlertCircle, Edit2, Check, X, ChevronDown } from 'lucide-react';
 import Papa from 'papaparse';
 
 // Import task library and questionnaire structure
@@ -30,6 +30,7 @@ function App() {
   const [editingMilestone, setEditingMilestone] = useState(null); // {index, field: 'start' | 'end'}
   const [editingMilestoneValue, setEditingMilestoneValue] = useState('');
   const [showEditMode, setShowEditMode] = useState(true); // Always show edit icons by default
+  const [showExportDropdown, setShowExportDropdown] = useState(false); // For export dropdown menu
 
   // Get visible sections based on previous answers
   const getVisibleSections = () => {
@@ -1204,7 +1205,126 @@ function App() {
     setEditingMilestoneValue('');
   };
 
-  const exportToCSV = () => {
+  // Export Project + Milestones CSV
+  const exportProjectCSV = () => {
+    if (!generatedPlan) return;
+
+    const language = responses.language || 'English';
+
+    // Build milestones data
+    const milestones = [];
+    const projectStartDate = responses.project_start_date || new Date().toISOString().split('T')[0];
+    let currentDate = projectStartDate;
+
+    // Clarity milestones
+    if (responses.clarity_phase) {
+      milestones.push({
+        'Milestone': language === 'Spanish' ? 'Mapeo de Procesos' : 'Process Mapping',
+        'Start Date': currentDate,
+        'End Date': addWeeks(currentDate, 2),
+        'Deliverables': language === 'Spanish'
+          ? 'Procesos As-Is documentados, Análisis de brechas'
+          : 'As-Is processes documented, Gap analysis'
+      });
+      currentDate = addWeeks(currentDate, 2);
+
+      milestones.push({
+        'Milestone': language === 'Spanish' ? 'Hallazgos, Oportunidades y TO-BE' : 'Findings, Opportunities & TO-BE',
+        'Start Date': currentDate,
+        'End Date': addWeeks(currentDate, 1),
+        'Deliverables': language === 'Spanish'
+          ? 'Procesos TO-BE diseñados, Plan de optimización'
+          : 'TO-BE processes designed, Optimization plan'
+      });
+      currentDate = addWeeks(currentDate, 1);
+
+      milestones.push({
+        'Milestone': 'Master of Implementation',
+        'Start Date': currentDate,
+        'End Date': addWeeks(currentDate, 1),
+        'Deliverables': language === 'Spanish'
+          ? 'Prototipo de Odoo, Mockups del sistema futuro'
+          : 'Odoo prototype, Future system mockups'
+      });
+      currentDate = addWeeks(currentDate, 1);
+    }
+
+    // Implementation milestones
+    if (responses.implementation_phase && responses.modules?.length > 0) {
+      responses.modules.forEach(moduleName => {
+        milestones.push({
+          'Milestone': language === 'Spanish' ? `Implementación del módulo de ${moduleName}` : `Implementation of ${moduleName} Module`,
+          'Start Date': '',
+          'End Date': '',
+          'Deliverables': language === 'Spanish'
+            ? `Configuración de ${moduleName}, Pruebas`
+            : `${moduleName} Configuration, Testing`
+        });
+      });
+    }
+
+    // Adoption milestones
+    if (responses.adoption_phase) {
+      const deadline = responses.project_deadline || currentDate;
+      const trainingStart = addWeeks(deadline, -2);
+
+      milestones.push({
+        'Milestone': language === 'Spanish' ? 'Capacitación y Go-Live' : 'Training & Go-Live',
+        'Start Date': trainingStart,
+        'End Date': deadline,
+        'Deliverables': language === 'Spanish'
+          ? 'Usuarios capacitados, Sistema en producción'
+          : 'Users trained, System in production'
+      });
+
+      // Support months
+      const adoptionMonths = parseInt(responses.adoption_duration_months || 2);
+      const dayAfterDeadline = addDays(deadline, 1);
+      const supportStart = getNextWorkday(dayAfterDeadline);
+
+      for (let month = 1; month <= adoptionMonths; month++) {
+        const monthStart = addWeeks(supportStart, (month - 1) * 4);
+        const monthEnd = addWeeks(supportStart, month * 4);
+
+        milestones.push({
+          'Milestone': language === 'Spanish' ? `Soporte - Mes ${month}` : `Support - Month ${month}`,
+          'Start Date': monthStart,
+          'End Date': monthEnd,
+          'Deliverables': language === 'Spanish'
+            ? `Soporte continuo y asistencia - Mes ${month}`
+            : `Ongoing support and assistance - Month ${month}`
+        });
+      }
+    }
+
+    // Add project metadata row at the top
+    const projectData = [{
+      'Display Name': responses.project_name,
+      'Customer': responses.client_name || '',
+      'Industry': responses.industry || '',
+      'Country': responses.country || '',
+      'Project Manager': responses.project_manager || '',
+      'Start Date': responses.project_start_date || '',
+      'Project Deadline': responses.project_deadline || '',
+      'Total Hours': generatedPlan.tasks.reduce((sum, t) => sum + (t.allocated_hours || 0), 0),
+      'Total Tasks': generatedPlan.tasks.filter(t => !deletedTaskIds.has(t.id)).length
+    }];
+
+    const csv = Papa.unparse(projectData) + '\n\nMILESTONES:\n' + Papa.unparse(milestones);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${responses.project_name?.replace(/\s+/g, '_')}_project.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Export Tasks CSV
+  const exportTasksCSV = () => {
     if (!generatedPlan) return;
 
     // Filter out deleted tasks before exporting
@@ -1212,32 +1332,26 @@ function App() {
 
     // Prepare CSV data in Odoo format
     const csvData = activeTasks.map(task => {
-      // Add task_type to tags
-      let taskTags = Array.isArray(task.tags) ? [...task.tags] : (task.tags ? [task.tags] : []);
-      const typeTag = task.task_type === 'custom' ? 'Custom'
-                    : task.task_type === 'ai_generated' ? 'AI Generated'
-                    : 'Native';
-      if (!taskTags.includes(typeTag)) {
-        taskTags.push(typeTag);
-      }
+      // Simplify tags - keep phase and type only
+      const tags = [task.phase, task.task_type === 'custom' ? 'Custom' : task.task_type === 'ai_generated' ? 'AI Generated' : 'Native'];
 
       return {
         'Title': task.title,
         'Project': responses.project_name,
         'Assignees': task.assignee,
         'Allocated Time': task.allocated_hours,
-        'Deadline': task.deadline || '',
         'Stage': 'New',
         'Priority': task.priority === 'High' ? 'High priority' :
                     task.priority === 'Medium' ? 'Medium priority' : 'Low priority',
-        'Tags': taskTags.join(','),
+        'Tags': tags.join(','),
         'Milestone': task.milestone || '',
-        'Parent Task': task.parent_task || ''
+        'Parent Task': task.parent_task || '',
+        'Description': task.description || ''
       };
     });
 
     const csv = Papa.unparse(csvData);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csv], { type: 'text/csv;charset-utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
 
@@ -1247,6 +1361,12 @@ function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  // Export both CSVs
+  const exportBoth = () => {
+    exportProjectCSV();
+    setTimeout(() => exportTasksCSV(), 500); // Small delay to avoid browser blocking
   };
 
   const resetPlanner = () => {
@@ -2112,13 +2232,63 @@ function App() {
                 <Edit2 className="w-5 h-5" />
                 {showEditMode ? 'Edit Mode: ON' : 'Edit Mode: OFF'}
               </button>
-              <button
-                onClick={exportToCSV}
-                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 font-semibold"
-              >
-                <Download className="w-5 h-5" />
-                Export to CSV
-              </button>
+              {/* Export Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowExportDropdown(!showExportDropdown)}
+                  className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 font-semibold"
+                >
+                  <Download className="w-5 h-5" />
+                  Export CSV
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+
+                {showExportDropdown && (
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                    <button
+                      onClick={() => {
+                        exportProjectCSV();
+                        setShowExportDropdown(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 flex items-center gap-2"
+                    >
+                      <FileText className="w-5 h-5 text-blue-600" />
+                      <div>
+                        <div className="font-semibold text-gray-900">Export Project CSV</div>
+                        <div className="text-xs text-gray-500">Project info + Milestones</div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        exportTasksCSV();
+                        setShowExportDropdown(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 flex items-center gap-2"
+                    >
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <div>
+                        <div className="font-semibold text-gray-900">Export Tasks CSV</div>
+                        <div className="text-xs text-gray-500">All tasks for import</div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        exportBoth();
+                        setShowExportDropdown(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors rounded-b-lg flex items-center gap-2"
+                    >
+                      <Download className="w-5 h-5 text-purple-600" />
+                      <div>
+                        <div className="font-semibold text-gray-900">Export Both</div>
+                        <div className="text-xs text-gray-500">Project + Tasks (2 files)</div>
+                      </div>
+                    </button>
+                  </div>
+                )}
+              </div>
               <button
                 onClick={resetPlanner}
                 className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center gap-2 font-semibold"
