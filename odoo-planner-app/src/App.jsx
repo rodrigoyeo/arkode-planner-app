@@ -1245,37 +1245,69 @@ function App() {
       totalHours += trainingHours + (supportPerMonth * adoptionDurationMonths);
     }
 
-    // Build milestone names array
-    const milestoneNames = [];
+    // Build milestones with deadlines
+    const milestones = [];
     const projectStartDate = responses.project_start_date || new Date().toISOString().split('T')[0];
     let currentDate = projectStartDate;
 
     // Clarity milestones
     if (responses.clarity_phase) {
-      milestoneNames.push(language === 'Spanish' ? 'Mapeo de Procesos' : 'Process Mapping');
-      milestoneNames.push(language === 'Spanish' ? 'Hallazgos, Oportunidades y TO-BE' : 'Findings, Opportunities & TO-BE');
-      milestoneNames.push('Master of Implementation');
+      const mappingEnd = addWeeks(currentDate, 2);
+      milestones.push({
+        name: language === 'Spanish' ? 'Mapeo de Procesos' : 'Process Mapping',
+        deadline: mappingEnd
+      });
+      currentDate = mappingEnd;
+
+      const toBeEnd = addWeeks(currentDate, 1);
+      milestones.push({
+        name: language === 'Spanish' ? 'Hallazgos, Oportunidades y TO-BE' : 'Findings, Opportunities & TO-BE',
+        deadline: toBeEnd
+      });
+      currentDate = toBeEnd;
+
+      const moiEnd = addWeeks(currentDate, 1);
+      milestones.push({
+        name: 'Master of Implementation',
+        deadline: moiEnd
+      });
+      currentDate = moiEnd;
     }
 
     // Implementation milestones
     if (responses.implementation_phase && responses.modules?.length > 0) {
+      const deadline = responses.project_deadline || currentDate;
       responses.modules.forEach(moduleName => {
-        milestoneNames.push(
-          language === 'Spanish'
+        milestones.push({
+          name: language === 'Spanish'
             ? `Implementación del módulo de ${moduleName}`
-            : `Implementation of ${moduleName} Module`
-        );
+            : `Implementation of ${moduleName} Module`,
+          deadline: deadline // All implementation milestones end at project deadline
+        });
       });
     }
 
     // Adoption milestones
     if (responses.adoption_phase) {
-      milestoneNames.push(language === 'Spanish' ? 'Capacitación y Go-Live' : 'Training & Go-Live');
+      const deadline = responses.project_deadline || currentDate;
+      const trainingEnd = deadline;
 
-      // Support months
+      milestones.push({
+        name: language === 'Spanish' ? 'Capacitación y Go-Live' : 'Training & Go-Live',
+        deadline: trainingEnd
+      });
+
+      // Support months - AFTER deadline
       const adoptionMonths = parseInt(responses.adoption_duration_months || 2);
+      const dayAfterDeadline = addDays(deadline, 1);
+      const supportStart = getNextWorkday(dayAfterDeadline);
+
       for (let month = 1; month <= adoptionMonths; month++) {
-        milestoneNames.push(language === 'Spanish' ? `Soporte - Mes ${month}` : `Support - Month ${month}`);
+        const monthEnd = addWeeks(supportStart, month * 4);
+        milestones.push({
+          name: language === 'Spanish' ? `Soporte - Mes ${month}` : `Support - Month ${month}`,
+          deadline: monthEnd
+        });
       }
     }
 
@@ -1288,7 +1320,8 @@ function App() {
       'Company': '', // Empty as per Odoo format
       'Project Manager': responses.project_manager || '',
       'Last Update Status': 'Set Status', // Default value
-      'Milestone': milestoneNames[0] || '',
+      'Milestone': milestones[0]?.name || '',
+      'Milestone / Deadline': milestones[0]?.deadline || '',
       'Status': '', // Empty as per Odoo format
       'Start Date': responses.project_start_date || '',
       'Expiration Date': responses.project_deadline || '',
@@ -1296,15 +1329,16 @@ function App() {
     };
     rows.push(firstRow);
 
-    // Additional rows: Only milestone names (all other fields empty)
-    for (let i = 1; i < milestoneNames.length; i++) {
+    // Additional rows: Only milestone names and deadlines (all other fields empty)
+    for (let i = 1; i < milestones.length; i++) {
       rows.push({
         'Display Name': '',
         'Customer': '',
         'Company': '',
         'Project Manager': '',
         'Last Update Status': '',
-        'Milestone': milestoneNames[i],
+        'Milestone': milestones[i].name,
+        'Milestone / Deadline': milestones[i].deadline,
         'Status': '',
         'Start Date': '',
         'Expiration Date': '',
