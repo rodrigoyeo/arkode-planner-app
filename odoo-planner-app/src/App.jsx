@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, CheckCircle, Download, RefreshCw, ChevronRight, ChevronLeft, AlertCircle } from 'lucide-react';
+import { FileText, CheckCircle, Download, RefreshCw, ChevronRight, ChevronLeft, AlertCircle, Edit2, Check, X } from 'lucide-react';
 import Papa from 'papaparse';
 
 // Import task library and questionnaire structure
@@ -23,6 +23,13 @@ function App() {
   const [editMode, setEditMode] = useState(false);
   const [showAllModules, setShowAllModules] = useState(false);
   const [deletedTaskIds, setDeletedTaskIds] = useState(new Set());
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editingHours, setEditingHours] = useState('');
+  const [editingDateField, setEditingDateField] = useState(null); // {taskId, field: 'start_date' | 'deadline'}
+  const [editingDateValue, setEditingDateValue] = useState('');
+  const [editingMilestone, setEditingMilestone] = useState(null); // {index, field: 'start' | 'end'}
+  const [editingMilestoneValue, setEditingMilestoneValue] = useState('');
+  const [showEditMode, setShowEditMode] = useState(true); // Always show edit icons by default
 
   // Get visible sections based on previous answers
   const getVisibleSections = () => {
@@ -455,6 +462,36 @@ function App() {
           });
         });
 
+        // Add User Access & Security Design task (always included in Implementation)
+        const securityTaskHours = Math.max(3, Math.round(implementationHours * 0.02)); // 2% of implementation hours, min 3h
+        const securityTaskDuration = Math.max(3, Math.ceil(securityTaskHours / 8)); // Days (8h/day)
+        const securityTaskEnd = addDays(currentImplDate, securityTaskDuration);
+
+        plan.tasks.push({
+          id: taskId++,
+          title: language === 'Spanish'
+            ? 'Diseño de Acceso de Usuarios y Seguridad'
+            : 'User Access & Security Design',
+          description: language === 'Spanish'
+            ? 'Definir roles de usuario, permisos y requisitos de seguridad para el sistema Odoo. Incluye configuración de grupos de acceso, reglas de registro y políticas de seguridad.'
+            : 'Define user roles, permissions, and security requirements for the Odoo system. Includes access group configuration, record rules, and security policies.',
+          allocated_hours: securityTaskHours,
+          priority: 'High',
+          category: language === 'Spanish' ? 'Seguridad' : 'Security',
+          tags: ['Implementation', 'Security', 'User Roles', 'Odoo Developer'],
+          phase: 'Implementation',
+          module: 'Security',
+          assignee: assignTaskToTeamMember(['Odoo Developer'], 'Implementation'),
+          stage: 'New',
+          start_date: currentImplDate,
+          deadline: securityTaskEnd,
+          milestone: language === 'Spanish' ? 'Configuración de Seguridad' : 'Security Configuration',
+          parent_task: '',
+          task_type: 'native'
+        });
+
+        currentImplDate = securityTaskEnd;
+
         // Add Multi-Warehouse Configuration tasks if applicable
         if (responses.multi_warehouse === 'Yes' && responses.warehouse_count > 1) {
           const warehouseCount = parseInt(responses.warehouse_count) || 2;
@@ -661,9 +698,25 @@ function App() {
         if (remainingHours > 0 && adoptionDurationMonths > 0) {
           const monthlyHours = Math.round(remainingHours / adoptionDurationMonths);
 
+          // TIMELINE FIX: Calculate available time between go-live and deadline
+          // If deadline is set, compress support months to fit within it
+          let weeksPerMonth = 4; // Default: 4 weeks per month
+
+          if (calculatedDeadline) {
+            const deadline = new Date(calculatedDeadline);
+            const goLive = new Date(goLiveDate);
+            const availableDays = Math.max(7, Math.ceil((deadline - goLive) / (1000 * 60 * 60 * 24)));
+            const totalWeeksAvailable = Math.floor(availableDays / 7);
+
+            // Distribute available weeks across support months
+            weeksPerMonth = Math.max(1, Math.floor(totalWeeksAvailable / adoptionDurationMonths));
+
+            console.log(`⏰ Support Timeline Compression: ${totalWeeksAvailable} weeks available for ${adoptionDurationMonths} months = ${weeksPerMonth} weeks/month`);
+          }
+
           for (let month = 1; month <= adoptionDurationMonths; month++) {
-            const monthStart = addWeeks(goLiveDate, (month - 1) * 4);
-            const monthEnd = addWeeks(goLiveDate, month * 4);
+            const monthStart = addWeeks(goLiveDate, (month - 1) * weeksPerMonth);
+            const monthEnd = addWeeks(goLiveDate, month * weeksPerMonth);
 
             plan.tasks.push({
               id: taskId++,
@@ -682,7 +735,7 @@ function App() {
               stage: 'New',
               start_date: monthStart,
               deadline: monthEnd,
-              milestone: `Adoption - Month ${month}`,
+              milestone: language === 'Spanish' ? 'Capacitación y Go-Live' : 'Training & Go-Live',
               parent_task: '',
               task_type: 'native'
             });
@@ -778,6 +831,95 @@ function App() {
             console.warn('⚠️ WARNING: No AI tasks were generated. Check API key configuration.');
             alert('⚠️ AI Customization: No tasks generated. Check console for details.\n\nUsing template tasks only.');
           }
+
+          // OPTION 3 - STEP 1: Scale AI tasks to fit their reserved budget
+          console.log('🔧 Applying AI task budget normalization...');
+
+          // Calculate AI task hours by phase
+          const aiTasksByPhase = {
+            'Clarity': [],
+            'Implementation': [],
+            'Adoption': []
+          };
+
+          plan.tasks.forEach(task => {
+            if (task.task_type === 'ai_generated') {
+              aiTasksByPhase[task.phase]?.push(task);
+            }
+          });
+
+          // Scale AI tasks for each phase to fit reserved budget
+          if (responses.clarity_phase && aiTasksByPhase.Clarity.length > 0) {
+            const clarityBudget = parseFloat(responses.clarity_hours || 0);
+            const aiReservedHours = clarityBudget * 0.30; // 30% reserved for AI
+            const actualAiHours = aiTasksByPhase.Clarity.reduce((sum, t) => sum + t.allocated_hours, 0);
+
+            if (actualAiHours > 0 && Math.abs(actualAiHours - aiReservedHours) > 1) {
+              const scaleFactor = aiReservedHours / actualAiHours;
+              console.log(`📊 Clarity AI tasks: ${actualAiHours}h → ${aiReservedHours}h (scale: ${scaleFactor.toFixed(2)})`);
+
+              aiTasksByPhase.Clarity.forEach(task => {
+                task.allocated_hours = Math.max(1, Math.round(task.allocated_hours * scaleFactor));
+              });
+            }
+          }
+
+          if (responses.implementation_phase && aiTasksByPhase.Implementation.length > 0) {
+            // Calculate total implementation hours from module allocations
+            const moduleFields = [
+              'module_crm_hours', 'module_sales_hours', 'module_purchase_hours',
+              'module_inventory_hours', 'module_accounting_hours', 'module_projects_hours',
+              'module_fsm_hours', 'module_expenses_hours', 'module_manufacturing_hours',
+              'module_ecommerce_hours', 'module_pos_hours', 'module_hr_hours',
+              'module_payroll_hours', 'module_helpdesk_hours'
+            ];
+
+            let implementationBudget = 0;
+            moduleFields.forEach(field => {
+              implementationBudget += parseFloat(responses[field]) || 0;
+            });
+
+            const customCount = parseInt(responses.custom_modules_count) || 0;
+            for (let i = 1; i <= customCount; i++) {
+              implementationBudget += parseFloat(responses[`custom_module_${i}_hours`]) || 0;
+            }
+            implementationBudget += parseFloat(responses.migration_hours) || 0;
+
+            const aiReservedHours = implementationBudget * 0.50; // 50% reserved for AI
+            const actualAiHours = aiTasksByPhase.Implementation.reduce((sum, t) => sum + t.allocated_hours, 0);
+
+            if (actualAiHours > 0 && Math.abs(actualAiHours - aiReservedHours) > 1) {
+              const scaleFactor = aiReservedHours / actualAiHours;
+              console.log(`📊 Implementation AI tasks: ${actualAiHours}h → ${aiReservedHours}h (scale: ${scaleFactor.toFixed(2)})`);
+
+              aiTasksByPhase.Implementation.forEach(task => {
+                task.allocated_hours = Math.max(1, Math.round(task.allocated_hours * scaleFactor));
+              });
+            }
+          }
+
+          if (responses.adoption_phase && aiTasksByPhase.Adoption.length > 0) {
+            // Calculate adoption budget correctly from training + support hours
+            const trainingHours = parseFloat(responses.training_hours) || 0;
+            const supportPerMonth = parseFloat(responses.support_hours_per_month) || 0;
+            const adoptionDurationMonths = parseInt(responses.adoption_duration_months || 2);
+            const adoptionBudget = trainingHours + (supportPerMonth * adoptionDurationMonths);
+
+            const aiReservedHours = adoptionBudget * 0.50; // 50% reserved for AI
+            const actualAiHours = aiTasksByPhase.Adoption.reduce((sum, t) => sum + t.allocated_hours, 0);
+
+            if (actualAiHours > 0 && aiReservedHours > 0 && Math.abs(actualAiHours - aiReservedHours) > 1) {
+              const scaleFactor = aiReservedHours / actualAiHours;
+              console.log(`📊 Adoption AI tasks: ${actualAiHours}h → ${aiReservedHours}h (scale: ${scaleFactor.toFixed(2)})`);
+
+              aiTasksByPhase.Adoption.forEach(task => {
+                task.allocated_hours = Math.max(1, Math.round(task.allocated_hours * scaleFactor));
+              });
+            } else if (aiReservedHours === 0) {
+              console.warn(`⚠️ Adoption AI budget is 0h - no hours to allocate for AI tasks`);
+            }
+          }
+
         } catch (error) {
           console.error('❌ ERROR generating AI tasks:', error);
           alert(`❌ AI Error: ${error.message}\n\nFalling back to template tasks only.`);
@@ -785,6 +927,131 @@ function App() {
         }
       } else {
         console.log('🚫 AI Customization is DISABLED by user');
+      }
+
+      // OPTION 3 - STEP 2: Final global normalization to ensure exact hour match
+      console.log('🔧 Applying final global hour normalization...');
+
+      // Calculate total input hours
+      let totalInputHours = 0;
+      if (responses.clarity_phase) {
+        totalInputHours += parseFloat(responses.clarity_hours || 0);
+      }
+      if (responses.implementation_phase) {
+        // Try multiple ways to get implementation hours
+        // Option 1: Sum of module-specific allocations
+        const moduleFields = [
+          'module_crm_hours', 'module_sales_hours', 'module_purchase_hours',
+          'module_inventory_hours', 'module_accounting_hours', 'module_projects_hours',
+          'module_fsm_hours', 'module_expenses_hours', 'module_manufacturing_hours',
+          'module_ecommerce_hours', 'module_pos_hours', 'module_hr_hours',
+          'module_payroll_hours', 'module_helpdesk_hours'
+        ];
+
+        let moduleHoursSum = 0;
+        moduleFields.forEach(field => {
+          moduleHoursSum += parseFloat(responses[field]) || 0;
+        });
+
+        const customCount = parseInt(responses.custom_modules_count) || 0;
+        for (let i = 1; i <= customCount; i++) {
+          moduleHoursSum += parseFloat(responses[`custom_module_${i}_hours`]) || 0;
+        }
+        const migrationHours = parseFloat(responses.migration_hours) || 0;
+        moduleHoursSum += migrationHours;
+
+        // Option 2: Total implementation_hours field (if user entered it directly)
+        const directImplementationHours = parseFloat(responses.implementation_hours) || 0;
+
+        // Use whichever is greater (prefer direct input if available)
+        const implementationHoursInput = Math.max(moduleHoursSum, directImplementationHours);
+        totalInputHours += implementationHoursInput;
+
+        console.log(`📊 Implementation Hours Input: ${implementationHoursInput}h (module sum: ${moduleHoursSum}h, direct: ${directImplementationHours}h)`);
+      }
+      if (responses.adoption_phase) {
+        // Calculate adoption hours from training + support
+        const trainingHours = parseFloat(responses.training_hours) || 0;
+        const supportPerMonth = parseFloat(responses.support_hours_per_month) || 0;
+        const adoptionDurationMonths = parseInt(responses.adoption_duration_months || 2);
+        const adoptionHoursInput = trainingHours + (supportPerMonth * adoptionDurationMonths);
+
+        totalInputHours += adoptionHoursInput;
+        console.log(`📊 Adoption Hours Input: ${adoptionHoursInput}h (training: ${trainingHours}h, support: ${supportPerMonth}h x ${adoptionDurationMonths} months)`);
+      }
+
+      // Calculate total output hours
+      const totalOutputHours = plan.tasks.reduce((sum, task) => sum + (task.allocated_hours || 0), 0);
+
+      // Calculate difference percentage
+      const hourDifference = totalOutputHours - totalInputHours;
+      const differencePercent = totalInputHours > 0 ? Math.abs(hourDifference / totalInputHours * 100) : 0;
+
+      console.log(`📊 Hour Analysis:`);
+      console.log(`   Input: ${totalInputHours}h`);
+      console.log(`   Output: ${totalOutputHours}h`);
+      console.log(`   Difference: ${hourDifference}h (${differencePercent.toFixed(1)}%)`);
+
+      // Apply global scaling if difference exceeds 5%
+      if (differencePercent > 5 && totalInputHours > 0) {
+        const globalScaleFactor = totalInputHours / totalOutputHours;
+        console.log(`⚠️ Hour difference exceeds 5%, applying global scale factor: ${globalScaleFactor.toFixed(3)}`);
+
+        // CRITICAL FIX: Scale all tasks as floats first, then round strategically
+        // This prevents rounding errors from accumulating
+        const scaledTasks = plan.tasks.map(task => ({
+          task: task,
+          originalHours: task.allocated_hours,
+          scaledHours: task.allocated_hours * globalScaleFactor
+        }));
+
+        // Round down most tasks, but round up enough to hit the target exactly
+        let totalAfterRounding = 0;
+        const roundedTasks = scaledTasks.map(item => {
+          const floored = Math.floor(item.scaledHours);
+          const ceiling = Math.ceil(item.scaledHours);
+          return {
+            ...item,
+            floored: Math.max(1, floored),
+            ceiling: Math.max(1, ceiling),
+            remainder: item.scaledHours - floored
+          };
+        });
+
+        // Sort by remainder (descending) to round up tasks with largest fractional parts
+        roundedTasks.sort((a, b) => b.remainder - a.remainder);
+
+        // Calculate how many tasks need to be rounded up to hit target exactly
+        const totalFloored = roundedTasks.reduce((sum, item) => sum + item.floored, 0);
+        let hoursNeeded = totalInputHours - totalFloored;
+
+        roundedTasks.forEach((item, index) => {
+          if (hoursNeeded > 0 && item.remainder > 0) {
+            item.task.allocated_hours = item.ceiling;
+            hoursNeeded -= (item.ceiling - item.floored);
+          } else {
+            item.task.allocated_hours = item.floored;
+          }
+        });
+
+        const finalTotalHours = plan.tasks.reduce((sum, task) => sum + task.allocated_hours, 0);
+        const finalDifference = finalTotalHours - totalInputHours;
+        const finalDifferencePercent = totalInputHours > 0 ? Math.abs(finalDifference / totalInputHours * 100) : 0;
+
+        console.log(`✅ After normalization:`);
+        console.log(`   Final Output: ${finalTotalHours}h`);
+        console.log(`   Final Difference: ${finalDifference}h (${finalDifferencePercent.toFixed(1)}%)`);
+
+        // Add normalization info to plan metadata
+        plan.metadata.hourNormalization = {
+          inputHours: totalInputHours,
+          originalOutputHours: totalOutputHours,
+          finalOutputHours: finalTotalHours,
+          scaleFactor: globalScaleFactor.toFixed(3),
+          finalDifferencePercent: finalDifferencePercent.toFixed(1)
+        };
+      } else {
+        console.log(`✅ Hour difference within acceptable range (±5%)`);
       }
 
       // Validate timeline constraints
@@ -828,6 +1095,100 @@ function App() {
     const newDeleted = new Set(deletedTaskIds);
     newDeleted.delete(taskId);
     setDeletedTaskIds(newDeleted);
+  };
+
+  // Handlers for editing task hours
+  const handleStartEditHours = (taskId, currentHours) => {
+    setEditingTaskId(taskId);
+    setEditingHours(currentHours.toString());
+  };
+
+  const handleSaveHours = (taskId) => {
+    const newHours = parseInt(editingHours);
+    if (isNaN(newHours) || newHours < 1) {
+      alert('Please enter a valid number of hours (minimum 1)');
+      return;
+    }
+
+    // Update the task hours in the plan
+    setGeneratedPlan(prevPlan => {
+      const updatedTasks = prevPlan.tasks.map(task =>
+        task.id === taskId ? { ...task, allocated_hours: newHours } : task
+      );
+      return { ...prevPlan, tasks: updatedTasks };
+    });
+
+    setEditingTaskId(null);
+    setEditingHours('');
+  };
+
+  const handleCancelEditHours = () => {
+    setEditingTaskId(null);
+    setEditingHours('');
+  };
+
+  // Handlers for editing task dates
+  const handleStartEditDate = (taskId, field, currentValue) => {
+    setEditingDateField({ taskId, field });
+    setEditingDateValue(currentValue || '');
+  };
+
+  const handleSaveDate = (taskId, field) => {
+    if (!editingDateValue) {
+      alert('Please enter a valid date');
+      return;
+    }
+
+    // Update the task date in the plan
+    setGeneratedPlan(prevPlan => {
+      const updatedTasks = prevPlan.tasks.map(task =>
+        task.id === taskId ? { ...task, [field]: editingDateValue } : task
+      );
+      return { ...prevPlan, tasks: updatedTasks };
+    });
+
+    setEditingDateField(null);
+    setEditingDateValue('');
+  };
+
+  const handleCancelEditDate = () => {
+    setEditingDateField(null);
+    setEditingDateValue('');
+  };
+
+  // Handlers for editing milestone dates
+  const handleStartEditMilestone = (index, field, currentValue) => {
+    setEditingMilestone({ index, field });
+    setEditingMilestoneValue(currentValue || '');
+  };
+
+  const handleSaveMilestone = (index, field) => {
+    if (!editingMilestoneValue) {
+      alert('Please enter a valid date');
+      return;
+    }
+
+    // Update milestone dates in plan metadata
+    setGeneratedPlan(prevPlan => {
+      const updatedMetadata = { ...prevPlan.metadata };
+      if (!updatedMetadata.customMilestones) {
+        updatedMetadata.customMilestones = {};
+      }
+      if (!updatedMetadata.customMilestones[index]) {
+        updatedMetadata.customMilestones[index] = {};
+      }
+      updatedMetadata.customMilestones[index][field] = editingMilestoneValue;
+
+      return { ...prevPlan, metadata: updatedMetadata };
+    });
+
+    setEditingMilestone(null);
+    setEditingMilestoneValue('');
+  };
+
+  const handleCancelEditMilestone = () => {
+    setEditingMilestone(null);
+    setEditingMilestoneValue('');
   };
 
   const exportToCSV = () => {
@@ -1728,6 +2089,17 @@ function App() {
 
             <div className="flex gap-3">
               <button
+                onClick={() => setShowEditMode(!showEditMode)}
+                className={`px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-semibold ${
+                  showEditMode
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                <Edit2 className="w-5 h-5" />
+                {showEditMode ? 'Edit Mode: ON' : 'Edit Mode: OFF'}
+              </button>
+              <button
                 onClick={exportToCSV}
                 className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 font-semibold"
               >
@@ -1907,16 +2279,108 @@ function App() {
                       });
                     }
 
-                    return milestones.map((milestone, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-4 py-3">
-                          <div className="font-semibold text-gray-900">{milestone.name}</div>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-700">{milestone.start}</td>
-                        <td className="px-4 py-3 text-sm text-gray-700 font-semibold">{milestone.end}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{milestone.deliverables}</td>
-                      </tr>
-                    ));
+                    return milestones.map((milestone, index) => {
+                      // Check if there are custom dates for this milestone
+                      const customMilestones = generatedPlan?.metadata?.customMilestones || {};
+                      const customDates = customMilestones[index] || {};
+                      const displayStart = customDates.start || milestone.start;
+                      const displayEnd = customDates.end || milestone.end;
+
+                      return (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-4 py-3">
+                            <div className="font-semibold text-gray-900">{milestone.name}</div>
+                          </td>
+                          {/* Start Date Column */}
+                          <td className="px-4 py-3">
+                            {editingMilestone?.index === index && editingMilestone?.field === 'start' ? (
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="date"
+                                  value={editingMilestoneValue}
+                                  onChange={(e) => setEditingMilestoneValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleSaveMilestone(index, 'start');
+                                    if (e.key === 'Escape') handleCancelEditMilestone();
+                                  }}
+                                  className="w-32 px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  autoFocus
+                                />
+                                <button
+                                  onClick={() => handleSaveMilestone(index, 'start')}
+                                  className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                  title="Save"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={handleCancelEditMilestone}
+                                  className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                  title="Cancel"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1 group">
+                                <span className="text-sm text-gray-700">{displayStart}</span>
+                                {showEditMode && <button
+                                  onClick={() => handleStartEditMilestone(index, 'start', displayStart)}
+                                  className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                                  title="Click to edit start date"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>}
+                              </div>
+                            )}
+                          </td>
+                          {/* End Date Column */}
+                          <td className="px-4 py-3">
+                            {editingMilestone?.index === index && editingMilestone?.field === 'end' ? (
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="date"
+                                  value={editingMilestoneValue}
+                                  onChange={(e) => setEditingMilestoneValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleSaveMilestone(index, 'end');
+                                    if (e.key === 'Escape') handleCancelEditMilestone();
+                                  }}
+                                  className="w-32 px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  autoFocus
+                                />
+                                <button
+                                  onClick={() => handleSaveMilestone(index, 'end')}
+                                  className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                  title="Save"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={handleCancelEditMilestone}
+                                  className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                  title="Cancel"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1 group">
+                                <span className="text-sm text-gray-700 font-semibold">{displayEnd}</span>
+                                {showEditMode && <button
+                                  onClick={() => handleStartEditMilestone(index, 'end', displayEnd)}
+                                  className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                                  title="Click to edit end date"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">{milestone.deliverables}</td>
+                        </tr>
+                      );
+                    });
                   })()}
                 </tbody>
               </table>
@@ -1939,10 +2403,12 @@ function App() {
                   <table className="w-full">
                     <thead className="bg-gray-50 border-b-2 border-gray-200">
                       <tr>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-1/3">Task</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-1/6">Category</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-20">Hours</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-24">Priority</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-1/4">Task</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-16">Hours</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-24">Start Date</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-24">Due Date</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-20">Priority</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Tags</th>
                         <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 w-20">Actions</th>
                       </tr>
@@ -1971,7 +2437,135 @@ function App() {
                             )}
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-700">{task.category}</td>
-                          <td className="px-4 py-3 text-sm font-semibold text-gray-900">{task.allocated_hours}</td>
+                          <td className="px-4 py-3">
+                            {editingTaskId === task.id ? (
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={editingHours}
+                                  onChange={(e) => setEditingHours(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleSaveHours(task.id);
+                                    if (e.key === 'Escape') handleCancelEditHours();
+                                  }}
+                                  className="w-16 px-2 py-1 text-sm font-semibold border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  autoFocus
+                                />
+                                <button
+                                  onClick={() => handleSaveHours(task.id)}
+                                  className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                  title="Save"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={handleCancelEditHours}
+                                  className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                  title="Cancel"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2 group">
+                                <span className="text-sm font-semibold text-gray-900">{task.allocated_hours}</span>
+                                {showEditMode && <button
+                                  onClick={() => handleStartEditHours(task.id, task.allocated_hours)}
+                                  className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                                  title="Click to edit hours"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>}
+                              </div>
+                            )}
+                          </td>
+                          {/* Start Date Column */}
+                          <td className="px-4 py-3">
+                            {editingDateField?.taskId === task.id && editingDateField?.field === 'start_date' ? (
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="date"
+                                  value={editingDateValue}
+                                  onChange={(e) => setEditingDateValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleSaveDate(task.id, 'start_date');
+                                    if (e.key === 'Escape') handleCancelEditDate();
+                                  }}
+                                  className="w-32 px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  autoFocus
+                                />
+                                <button
+                                  onClick={() => handleSaveDate(task.id, 'start_date')}
+                                  className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                  title="Save"
+                                >
+                                  <Check className="w-3 h-3" />
+                                </button>
+                                <button
+                                  onClick={handleCancelEditDate}
+                                  className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                  title="Cancel"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1 group">
+                                <span className="text-xs text-gray-700">{task.start_date || '-'}</span>
+                                {showEditMode && <button
+                                  onClick={() => handleStartEditDate(task.id, 'start_date', task.start_date)}
+                                  className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                                  title="Click to edit start date"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>}
+                              </div>
+                            )}
+                          </td>
+                          {/* Due Date Column */}
+                          <td className="px-4 py-3">
+                            {editingDateField?.taskId === task.id && editingDateField?.field === 'deadline' ? (
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="date"
+                                  value={editingDateValue}
+                                  onChange={(e) => setEditingDateValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleSaveDate(task.id, 'deadline');
+                                    if (e.key === 'Escape') handleCancelEditDate();
+                                  }}
+                                  className="w-32 px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  autoFocus
+                                />
+                                <button
+                                  onClick={() => handleSaveDate(task.id, 'deadline')}
+                                  className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                  title="Save"
+                                >
+                                  <Check className="w-3 h-3" />
+                                </button>
+                                <button
+                                  onClick={handleCancelEditDate}
+                                  className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                  title="Cancel"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1 group">
+                                <span className="text-xs text-gray-700">{task.deadline || '-'}</span>
+                                {showEditMode && <button
+                                  onClick={() => handleStartEditDate(task.id, 'deadline', task.deadline)}
+                                  className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                                  title="Click to edit due date"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>}
+                              </div>
+                            )}
+                          </td>
                           <td className="px-4 py-3">
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                               task.priority === 'High' ? 'bg-red-100 text-red-800' :

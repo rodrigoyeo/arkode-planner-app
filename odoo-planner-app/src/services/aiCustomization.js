@@ -419,7 +419,23 @@ Core Processes: ${context.core_processes}
 
 TASK: Generate 2-3 specific Clarity phase discovery tasks ONLY.
 
-BUDGET CONSTRAINT: Total hours for ALL tasks must NOT exceed ${Math.round(context.clarity_hours * 0.3)} hours (30% of Clarity budget is for AI tasks, rest is template).
+CRITICAL BUDGET CONSTRAINT:
+- Total hours for ALL tasks COMBINED must be EXACTLY ${Math.round(context.clarity_hours * 0.3)} hours or LESS
+- Each individual task should be 1-3 hours maximum
+- If you generate 3 tasks at 2h each = 6h total, that's perfect
+- NEVER exceed the total budget of ${Math.round(context.clarity_hours * 0.3)}h
+
+NATIVE CLARITY TASKS ALREADY INCLUDED (DO NOT DUPLICATE):
+- ${isSpanish ? 'Kick-off del proyecto' : 'Project Kickoff Meeting'}
+- ${isSpanish ? 'Mapeo de Procesos Actuales (As-Is)' : 'Current Process Mapping (As-Is)'}
+- ${isSpanish ? 'Evaluación de Migración de Datos' : 'Data Migration Assessment'}
+- ${isSpanish ? 'Análisis de Requisitos de Integración' : 'Integration Requirements Analysis'}
+- ${isSpanish ? 'Diseño del proceso To-Be' : 'Future Process Design (To-Be)'}
+- ${isSpanish ? 'Definición del alcance de personalizaciones' : 'Customization Scoping'}
+- ${isSpanish ? 'Revisión de Procesos To-Be y Aprobación del Cliente' : 'Process To-Be Review & Client Approval'}
+- ${isSpanish ? 'Master of Implementation - Creación' : 'Master of Implementation - Creation'}
+
+Generate ONLY ADDITIONAL specific discovery tasks that are NOT in the native list above.
 
 Focus on:
 - Specific process mapping from current systems mentioned
@@ -489,7 +505,17 @@ Multi-warehouse: ${context.multi_warehouse} ${context.multi_warehouse === 'Yes' 
 
 TASK: Generate specific Implementation tasks for NATIVE MODULE CUSTOMIZATIONS, DATA MIGRATION, and CUSTOM MODULES.
 
-BUDGET CONSTRAINT: Total hours for ALL tasks must NOT exceed ${customDevBudget} hours.
+CRITICAL BUDGET CONSTRAINT:
+- Total hours for ALL tasks COMBINED must be EXACTLY ${customDevBudget} hours or LESS
+- Distribute hours wisely across all tasks
+- Each task should be 3-10 hours maximum (prefer smaller tasks)
+- NEVER exceed the total budget of ${customDevBudget}h
+
+NATIVE IMPLEMENTATION TASKS ALREADY INCLUDED (DO NOT DUPLICATE):
+- ${isSpanish ? 'Configuración de Seguridad y Acceso de Usuarios' : 'User Access & Security Configuration'}
+- ${isSpanish ? 'Configuración estándar de cada módulo seleccionado' : 'Standard configuration for each selected module'} (${context.modules.join(', ')})
+${context.multi_warehouse === 'Yes' ? `- ${isSpanish ? 'Configuración de múltiples almacenes' : 'Multi-warehouse configuration'}` : ''}
+${context.multi_warehouse === 'Yes' ? `- ${isSpanish ? 'Configuración de transferencias entre almacenes' : 'Inter-warehouse transfer configuration'}` : ''}
 
 IMPORTANT - Generate tasks ONLY for:
 1. **Native module customizations** (listed above) - break down each customization into Requirements, Design, Development, Testing tasks
@@ -507,17 +533,19 @@ CRITICAL - For Native Module Customizations:
 - Include "custom_module" field with the module name (e.g., "CRM", "Purchase")
 
 DO NOT generate tasks for:
-- Standard Odoo module configuration (CRM, Sales, etc.) - templates handle this
-- Training or user adoption - that's the Adoption phase
-- Generic setup tasks
+- Standard Odoo module configuration (CRM, Sales, etc.) - templates already create these!
+- Training or user adoption - that's the Adoption phase!
+- Generic setup or security tasks - already handled!
+- Module configuration (that's vanilla Odoo setup!)
 
 CRITICAL - Task naming requirements:
 - Use the EXACT module names provided above
 - Break down each custom module into 3-5 subtasks
+- Keep tasks small and focused (3-10 hours each)
 - Example subtask names in ${language}:
-${examples.customModule.subtasks('I+D Module').map((s, i) => `  * "${s}" (${15 + i * 5}h)`).join('\n')}
+${examples.customModule.subtasks('I+D Module').map((s, i) => `  * "${s}" (${3 + i * 2}h)`).join('\n')}
 
-Each task should be 15-40 hours maximum.
+REMEMBER: Total for ALL tasks must not exceed ${customDevBudget}h!
 
 Return format (example in ${language}):
 {
@@ -553,21 +581,36 @@ Training Format: ${context.training_format}
 
 TASK: Generate 2-4 specific Adoption phase tasks focused on TRAINING and CHANGE MANAGEMENT only.
 
-BUDGET CONSTRAINT: Total hours for ALL tasks must NOT exceed ${Math.round(context.adoption_hours * 0.5)} hours (50% of Adoption budget).
+CRITICAL BUDGET CONSTRAINT:
+- Total hours for ALL tasks COMBINED must be EXACTLY ${Math.round(context.adoption_hours * 0.5)} hours or LESS
+- Each task should be 1-5 hours maximum
+- Distribute hours wisely across all tasks
+- NEVER exceed the total budget of ${Math.round(context.adoption_hours * 0.5)}h
 
-CRITICAL - Generate tasks ONLY for:
-1. Role-based training sessions for user groups mentioned
-2. Change management workshops
-3. Documentation creation
-4. Go-live support planning
+NATIVE ADOPTION TASKS ALREADY INCLUDED (DO NOT DUPLICATE):
+- ${isSpanish ? 'Preparación de Material de Capacitación' : 'Training Material Preparation'}
+- ${isSpanish ? 'Configuración de Base de Conocimiento' : 'Knowledge Base Setup'}
+- ${isSpanish ? 'Capacitación de Administradores/Super Usuarios' : 'Admin/Super User Training'}
+- ${isSpanish ? 'Sesiones de Capacitación para Usuarios Finales' : 'End User Training Sessions'}
+- ${isSpanish ? 'Preparación para Go-Live' : 'Go-Live Preparation'}
+- ${isSpanish ? 'Soporte Go-Live (Día 1-3)' : 'Go-Live Support (Day 1-3)'}
+- ${isSpanish ? 'Cierre de Proyecto y Entrega' : 'Project Closure & Handoff'}
+
+CRITICAL - Generate ONLY ADDITIONAL tasks that are NOT in the native list above:
+1. Industry-specific training (NOT generic user training - that's already covered!)
+2. Advanced change management workshops (NOT basic training - that's covered!)
+3. Specialized documentation (NOT generic user guides - that's covered!)
+4. Unique adoption challenges for this specific client
 
 DO NOT generate tasks for:
 - Building features or modules (that's Implementation phase!)
 - Configuring integrations (that's Implementation phase!)
 - Data migration (that's Implementation phase!)
 - System development (that's Implementation phase!)
+- Generic "user training sessions" (ALREADY COVERED in native tasks!)
+- Generic "change management" (be SPECIFIC to client needs!)
 
-Focus on how to TRAIN users on the already-built system, NOT on building new features.
+Focus on UNIQUE, SPECIFIC adoption needs beyond the standard native tasks.
 
 Example of CORRECT Adoption tasks in ${language}:
 - "${examples.adoption.training.replace('[área]', isSpanish ? 'ventas' : 'sales')}" (8h)

@@ -33,18 +33,6 @@
         "task_type": "native"
       },
       {
-        "name": "Stakeholder Interviews",
-        "name_es": "Entrevistas con Stakeholders",
-        "description": "Conduct interviews with key stakeholders to understand business requirements and pain points",
-        "description_es": "Realizar entrevistas con stakeholders clave para entender requisitos y puntos de dolor",
-        "estimated_hours": 8,
-        "priority": "High",
-        "category": "Requirements Gathering",
-        "tags": ["Discovery", "Requirements", "Process Consultant"],
-        "week": 1,
-        "task_type": "native"
-      },
-      {
         "name": "Current Process Mapping (As-Is)",
         "name_es": "Mapeo de Procesos Actuales (As-Is)",
         "description": "Document client's current business processes across all departments",
@@ -105,18 +93,6 @@
         "task_type": "native"
       },
       {
-        "name": "User Access & Security Design",
-        "name_es": "Diseño de Acceso de Usuarios y Seguridad",
-        "description": "Define user roles, permissions, and security requirements",
-        "description_es": "Definir roles de usuario, permisos y requisitos de seguridad",
-        "estimated_hours": 3,
-        "priority": "Medium",
-        "category": "Security",
-        "tags": ["Security", "User Roles", "Odoo Developer"],
-        "week": 3,
-        "task_type": "native"
-      },
-      {
         "name": "Process To-Be Review & Client Approval",
         "name_es": "Revisión de Procesos To-Be y Aprobación del Cliente",
         "description": "Present optimized processes to client and obtain approval before creating Master of Implementation",
@@ -137,18 +113,6 @@
         "priority": "High",
         "category": "Master of Implementation",
         "tags": ["Master of Implementation", "Prototype", "Process Consultant"],
-        "week": 4,
-        "task_type": "native"
-      },
-      {
-        "name": "Master of Implementation - Presentation",
-        "name_es": "Master of Implementation - Presentación",
-        "description": "Present Master of Implementation to stakeholders, demonstrating the complete Odoo solution design and obtaining sign-off",
-        "description_es": "Presentar el Master of Implementation a los stakeholders, demostrando el diseño completo de la solución Odoo y obteniendo aprobación",
-        "estimated_hours": 4,
-        "priority": "High",
-        "category": "Master of Implementation",
-        "tags": ["Master of Implementation", "Presentation", "Client Approval"],
         "week": 4,
         "task_type": "native"
       }
