@@ -272,7 +272,7 @@ function App() {
         const totalEstimatedHours = clarityTasks.reduce((sum, t) => sum + t.estimated_hours, 0);
 
         // Reserve 30% of Clarity budget for AI tasks (if AI enabled), 70% for templates
-        const aiReservedPercent = responses.enable_ai_customization !== false ? 0.30 : 0;
+        const aiReservedPercent = responses.enable_ai_customization === true ? 0.30 : 0;
         const templateBudget = clarityHours * (1 - aiReservedPercent);
         const hourMultiplier = clarityHours > 0 ? templateBudget / totalEstimatedHours : 1;
         const language = responses.language || 'English';
@@ -353,10 +353,10 @@ function App() {
           }
 
           // If no hours specified, reserve 50% of implementation for custom dev
-          if (customDevHours === 0 && responses.enable_ai_customization) {
+          if (customDevHours === 0 && responses.enable_ai_customization === true) {
             customDevHours = implementationHours * 0.5;
           }
-        } else if (!responses.enable_ai_customization && responses.customizations === 'Yes') {
+        } else if (responses.enable_ai_customization !== true && responses.customizations === 'Yes') {
           // Fallback to old hardcoded template (if AI disabled and no custom modules specified)
           const customTasks = customDevTemplate.custom_development.tasks;
           const customizationScope = responses.customization_scope || '';
@@ -563,7 +563,7 @@ function App() {
 
         // Add Custom Development tasks if customizations are required
         // ONLY if AI customization is disabled (otherwise AI generates custom tasks)
-        if (responses.customizations === 'Yes' && responses.enable_ai_customization === false) {
+        if (responses.customizations === 'Yes' && responses.enable_ai_customization !== true) {
           console.log('📦 Using hardcoded custom development template (AI disabled)');
           const customTasks = customDevTemplate.custom_development.tasks;
           const customizationScope = responses.customization_scope || '';
@@ -653,7 +653,7 @@ function App() {
         const coreTasksEstimatedHours = coreTasks.reduce((sum, t) => sum + t.estimated_hours, 0);
 
         // Reserve 50% of Adoption budget for AI tasks (if AI enabled), 50% for templates + support
-        const adoptionAiReservedPercent = responses.enable_ai_customization !== false ? 0.50 : 0;
+        const adoptionAiReservedPercent = responses.enable_ai_customization === true ? 0.50 : 0;
         const adoptionTemplateBudget = adoptionHours * (1 - adoptionAiReservedPercent);
 
         // Scale core tasks to fit within template budget (leaving room for monthly support)
@@ -744,7 +744,7 @@ function App() {
       }
 
       // Generate AI-customized tasks if enabled
-      if (responses.enable_ai_customization !== false) {
+      if (responses.enable_ai_customization === true) {
         console.log('🤖 AI Customization is ENABLED');
         console.log('📝 Checking for API keys...');
         console.log('Claude Key:', import.meta.env.VITE_CLAUDE_API_KEY ? '✅ Found' : '❌ Not found');
