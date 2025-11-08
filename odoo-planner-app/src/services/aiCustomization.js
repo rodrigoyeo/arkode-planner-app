@@ -264,7 +264,8 @@ function buildContext(responses) {
 
     // Implementation context
     modules: responses.modules || [],
-    module_customizations: responses.module_customizations || '',
+    module_customization_flags: responses.module_customization_flags || {},
+    module_customization_details: responses.module_customization_details || {},
     data_migration: responses.data_migration || 'No',
     data_migration_scope: responses.data_migration_scope || '',
     integrations: responses.integrations || 'No',
@@ -460,12 +461,25 @@ Return format (example in ${language}):
       customModulesDescription = context.customization_scope;
     }
 
+    // Build native module customizations description
+    const customizationFlags = context.module_customization_flags || {};
+    const customizationDetails = context.module_customization_details || {};
+    const modulesWithCustomizations = Object.keys(customizationFlags).filter(mod => customizationFlags[mod]);
+
+    let nativeCustomizationsDescription = 'None - using vanilla Odoo modules';
+    if (modulesWithCustomizations.length > 0) {
+      nativeCustomizationsDescription = modulesWithCustomizations.map(moduleName => {
+        const details = customizationDetails[moduleName] || 'No details provided';
+        return `\n${moduleName} Module:\n${details}`;
+      }).join('\n');
+    }
+
     return `${baseInstructions}
 Data Migration Scope: ${context.data_migration_scope || 'None'}
 Integration Requirements: ${context.integration_list || 'None'}
 
 Native Module Customizations:
-${context.module_customizations || 'None - using vanilla Odoo modules'}
+${nativeCustomizationsDescription}
 
 Custom Modules to Develop:
 ${customModulesDescription}

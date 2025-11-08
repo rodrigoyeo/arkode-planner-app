@@ -173,16 +173,6 @@
           "show_more_threshold": 8
         },
         {
-          "id": "module_customizations",
-          "question": "→ Module Customizations",
-          "type": "textarea",
-          "required": false,
-          "conditional": "implementation_phase === true",
-          "placeholder": "Describe customizations for each module:\n\nCRM: Lead scoring based on engagement, WhatsApp integration, AI chatbot\nPurchase: Compare multiple POs side-by-side, approval workflow for orders >$10K\nInventory: Custom barcode labels, automated reorder points by location",
-          "help_text": "List which native modules will be customized and what features will be added. This helps AI generate specific customization tasks.",
-          "rows": 6
-        },
-        {
           "id": "custom_modules_visual",
           "question": "→ Custom Modules",
           "type": "custom_modules",
@@ -355,6 +345,21 @@
           "conditional": "multi_warehouse === 'Yes'",
           "min": 2,
           "placeholder": "3"
+        }
+      ]
+    },
+
+    {
+      "id": "module_customizations",
+      "title": "Module Customizations",
+      "description": "Describe customizations for the modules you flagged",
+      "conditional": "implementation_phase === true && module_customization_flags && Object.keys(module_customization_flags).length > 0",
+      "questions": [
+        {
+          "id": "module_customization_details",
+          "question": "Module Customization Details",
+          "type": "module_customization_details",
+          "required": false
         }
       ]
     },

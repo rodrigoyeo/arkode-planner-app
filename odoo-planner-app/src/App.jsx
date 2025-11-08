@@ -186,6 +186,59 @@ function App() {
       let taskId = 1;
       const projectStartDate = responses.project_start_date || new Date().toISOString().split('T')[0];
 
+      // Calculate project timeline constraints
+      const projectDurationWeeks = parseInt(responses.project_duration_weeks) || null;
+      const projectDeadline = responses.project_deadline || null;
+
+      // Calculate total available days
+      let totalAvailableDays = null;
+      let calculatedDeadline = projectDeadline;
+
+      if (projectDeadline) {
+        // If deadline is specified, calculate days between start and deadline
+        const start = new Date(projectStartDate);
+        const end = new Date(projectDeadline);
+        totalAvailableDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      } else if (projectDurationWeeks) {
+        // If only duration is specified, calculate deadline
+        totalAvailableDays = projectDurationWeeks * 7;
+        calculatedDeadline = addDays(projectStartDate, totalAvailableDays);
+      }
+
+      // Calculate phase durations based on constraints
+      let clarityDurationWeeks = 4; // Default: 4 weeks max for Clarity
+      let implementationDays = null;
+      let adoptionDays = null;
+
+      if (totalAvailableDays) {
+        // Ensure Clarity doesn't exceed 4 weeks OR total available time
+        const maxClarityDays = Math.min(28, totalAvailableDays * 0.3); // Max 4 weeks or 30% of project
+        clarityDurationWeeks = Math.min(4, Math.ceil(maxClarityDays / 7));
+
+        // Distribute remaining time between Implementation and Adoption
+        const remainingDays = totalAvailableDays - (clarityDurationWeeks * 7);
+
+        // Implementation gets 60% of remaining, Adoption gets 40%
+        if (responses.implementation_phase && responses.adoption_phase) {
+          implementationDays = Math.floor(remainingDays * 0.6);
+          adoptionDays = Math.floor(remainingDays * 0.4);
+        } else if (responses.implementation_phase) {
+          implementationDays = remainingDays;
+        } else if (responses.adoption_phase) {
+          adoptionDays = remainingDays;
+        }
+      }
+
+      console.log('📅 Timeline Constraints:', {
+        projectStartDate,
+        projectDeadline,
+        calculatedDeadline,
+        totalAvailableDays,
+        clarityDurationWeeks,
+        implementationDays,
+        adoptionDays
+      });
+
       // Helper function to intelligently assign tasks to team members based on role tags
       const assignTaskToTeamMember = (taskTags, taskPhase) => {
         const teamMembers = responses.team_members || [];
@@ -215,7 +268,7 @@ function App() {
       };
 
       // Calculate phase end dates for sequencing
-      const clarityEndDate = addWeeks(projectStartDate, 4); // 4 weeks for Clarity
+      const clarityEndDate = addWeeks(projectStartDate, clarityDurationWeeks);
 
       // Add Clarity Phase tasks (using improved structure)
       if (responses.clarity_phase) {
@@ -331,9 +384,19 @@ function App() {
         // Reserve hours for custom development and migration, distribute rest to modules
         const hoursForModules = Math.max(0, implementationHours - customDevHours - migrationHours);
 
-        // Calculate implementation duration (assume 40h/week per FTE)
-        const implementationWeeks = Math.ceil(implementationHours / 40);
-        const implementationEndDate = addWeeks(clarityEndDate, implementationWeeks);
+        // Calculate implementation duration
+        let implementationWeeks;
+        let implementationEndDate;
+
+        if (implementationDays) {
+          // Use timeline constraint
+          implementationWeeks = Math.ceil(implementationDays / 7);
+          implementationEndDate = addDays(clarityEndDate, implementationDays);
+        } else {
+          // Fallback: calculate based on hours (assume 40h/week per FTE)
+          implementationWeeks = Math.ceil(implementationHours / 40);
+          implementationEndDate = addWeeks(clarityEndDate, implementationWeeks);
+        }
 
         let currentImplDate = clarityEndDate;
         const daysPerTask = Math.ceil((implementationWeeks * 7) / (selectedModules.length * 5)); // Rough estimate
@@ -528,28 +591,37 @@ function App() {
         const language = responses.language || 'English';
 
         // Adoption starts 2 weeks before implementation ends (for training prep)
-        // Calculate Implementation hours from breakdown for timing purposes
-        const moduleFields = [
-          'module_crm_hours', 'module_sales_hours', 'module_purchase_hours',
-          'module_inventory_hours', 'module_accounting_hours', 'module_projects_hours',
-          'module_fsm_hours', 'module_expenses_hours', 'module_manufacturing_hours',
-          'module_ecommerce_hours', 'module_pos_hours', 'module_hr_hours',
-          'module_payroll_hours', 'module_helpdesk_hours'
-        ];
-        let implementationHoursForTiming = 0;
-        moduleFields.forEach(field => {
-          implementationHoursForTiming += parseFloat(responses[field]) || 0;
-        });
-        const customCount = parseInt(responses.custom_modules_count) || 0;
-        for (let i = 1; i <= customCount; i++) {
-          implementationHoursForTiming += parseFloat(responses[`custom_module_${i}_hours`]) || 0;
-        }
-        implementationHoursForTiming += parseFloat(responses.migration_hours) || 0;
+        // Use previously calculated implementation end date or calculate fallback
+        let calculatedImplementationEndDate;
 
-        const implementationWeeks = Math.ceil(implementationHoursForTiming / 40);
-        const implementationEndDate = addWeeks(clarityEndDate, implementationWeeks);
-        const adoptionStartDate = addWeeks(implementationEndDate, -2); // Start 2 weeks before go-live
-        const goLiveDate = implementationEndDate;
+        if (implementationDays) {
+          // Use timeline constraint
+          calculatedImplementationEndDate = addDays(clarityEndDate, implementationDays);
+        } else {
+          // Fallback: calculate from hours
+          const moduleFields = [
+            'module_crm_hours', 'module_sales_hours', 'module_purchase_hours',
+            'module_inventory_hours', 'module_accounting_hours', 'module_projects_hours',
+            'module_fsm_hours', 'module_expenses_hours', 'module_manufacturing_hours',
+            'module_ecommerce_hours', 'module_pos_hours', 'module_hr_hours',
+            'module_payroll_hours', 'module_helpdesk_hours'
+          ];
+          let implementationHoursForTiming = 0;
+          moduleFields.forEach(field => {
+            implementationHoursForTiming += parseFloat(responses[field]) || 0;
+          });
+          const customCount = parseInt(responses.custom_modules_count) || 0;
+          for (let i = 1; i <= customCount; i++) {
+            implementationHoursForTiming += parseFloat(responses[`custom_module_${i}_hours`]) || 0;
+          }
+          implementationHoursForTiming += parseFloat(responses.migration_hours) || 0;
+
+          const implementationWeeks = Math.ceil(implementationHoursForTiming / 40);
+          calculatedImplementationEndDate = addWeeks(clarityEndDate, implementationWeeks);
+        }
+
+        const adoptionStartDate = addWeeks(calculatedImplementationEndDate, -2); // Start 2 weeks before go-live
+        const goLiveDate = calculatedImplementationEndDate;
 
         // Add core adoption tasks
         const coreTasks = adoptionPhaseImproved.adoption_phase.standard_tasks;
@@ -725,6 +797,25 @@ function App() {
         }
       } else {
         console.log('🚫 AI Customization is DISABLED by user');
+      }
+
+      // Validate timeline constraints
+      if (calculatedDeadline) {
+        const lastTask = plan.tasks.reduce((latest, task) => {
+          const taskDeadline = new Date(task.deadline);
+          const latestDeadline = new Date(latest.deadline);
+          return taskDeadline > latestDeadline ? task : latest;
+        }, plan.tasks[0]);
+
+        if (lastTask && new Date(lastTask.deadline) > new Date(calculatedDeadline)) {
+          const overageDays = Math.ceil((new Date(lastTask.deadline) - new Date(calculatedDeadline)) / (1000 * 60 * 60 * 24));
+          console.warn(`⚠️ Plan extends ${overageDays} days beyond deadline. Last task: ${lastTask.title} (${lastTask.deadline})`);
+
+          // Add warning to plan metadata
+          plan.metadata.timelineWarning = `Plan extends ${overageDays} days beyond project deadline (${calculatedDeadline}). Consider reducing scope or extending timeline.`;
+        } else {
+          console.log(`✅ All tasks fit within deadline: ${calculatedDeadline}`);
+        }
       }
 
       setGeneratedPlan(plan);
@@ -973,7 +1064,7 @@ function App() {
                       )}
                     </button>
 
-                    {/* Hour input - only show if module is selected and in implementation phase */}
+                    {/* Hour input and customization checkbox - only show if module is selected and in implementation phase */}
                     {isModulesQuestion && isSelected && responses.implementation_phase && (
                       <div className="mt-2 pt-2 border-t border-purple-400" onClick={(e) => e.stopPropagation()}>
                         <input
@@ -985,6 +1076,25 @@ function App() {
                           className="w-full px-2 py-1 text-sm rounded border border-purple-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         />
                         <div className="text-xs text-purple-100 mt-1">Allocated hours</div>
+
+                        {/* Customization checkbox */}
+                        <label className="flex items-center mt-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={!!(responses.module_customization_flags && responses.module_customization_flags[optionValue])}
+                            onChange={(e) => {
+                              const flags = { ...(responses.module_customization_flags || {}) };
+                              if (e.target.checked) {
+                                flags[optionValue] = true;
+                              } else {
+                                delete flags[optionValue];
+                              }
+                              handleResponseChange('module_customization_flags', flags);
+                            }}
+                            className="mr-2 h-4 w-4 text-purple-600 focus:ring-purple-500 border-purple-300 rounded"
+                          />
+                          <span className="text-xs text-purple-100">Requires customization?</span>
+                        </label>
                       </div>
                     )}
                   </div>
@@ -1017,6 +1127,46 @@ function App() {
             {question.help_text && (
               <p className="text-sm text-gray-600">{question.help_text}</p>
             )}
+          </div>
+        );
+
+      case 'module_customization_details':
+        // Get list of modules that need customization
+        const customizationFlags = responses.module_customization_flags || {};
+        const modulesToCustomize = Object.keys(customizationFlags).filter(mod => customizationFlags[mod]);
+
+        if (modulesToCustomize.length === 0) {
+          return null; // Don't render if no modules need customization
+        }
+
+        // Initialize details object if needed
+        const customizationDetails = responses.module_customization_details || {};
+
+        return (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600 mb-4">
+              Describe the customizations needed for each module. Be specific about features, workflows, and integrations.
+            </p>
+            {modulesToCustomize.map(moduleName => (
+              <div key={moduleName} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  {moduleName} Customizations
+                </label>
+                <textarea
+                  value={customizationDetails[moduleName] || ''}
+                  onChange={(e) => {
+                    const newDetails = { ...customizationDetails, [moduleName]: e.target.value };
+                    handleResponseChange('module_customization_details', newDetails);
+                  }}
+                  placeholder={`Example for ${moduleName}:\n- Lead scoring based on engagement\n- WhatsApp integration for real-time chat\n- AI chatbot for lead qualification\n- Custom dashboard showing conversion funnel`}
+                  rows={6}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  List specific features, workflows, and integrations needed for {moduleName}
+                </p>
+              </div>
+            ))}
           </div>
         );
 
@@ -1581,6 +1731,11 @@ function App() {
                 {activeTasks.length} tasks | {totalHours.toFixed(1)} total hours
                 {deletedCount > 0 && <span className="text-red-600 ml-2">({deletedCount} deleted)</span>}
               </p>
+              {generatedPlan.metadata.timelineWarning && (
+                <div className="mt-2 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 text-sm">
+                  <strong>⚠️ Timeline Warning:</strong> {generatedPlan.metadata.timelineWarning}
+                </div>
+              )}
             </div>
 
             <div className="flex gap-3">
