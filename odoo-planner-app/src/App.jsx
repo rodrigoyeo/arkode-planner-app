@@ -1382,7 +1382,6 @@ function App() {
         'Priority': task.priority === 'High' ? 'High priority' :
                     task.priority === 'Medium' ? 'Medium priority' : 'Low priority',
         'Tags': tags.join(','),
-        'Milestone': task.milestone || '',
         'Parent Task': task.parent_task || '',
         'Description': task.description || ''
       };
