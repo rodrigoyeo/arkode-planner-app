@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, CheckCircle, Download, RefreshCw, ChevronRight, ChevronLeft, AlertCircle, Edit2, Check, X, ChevronDown } from 'lucide-react';
+import { FileText, CheckCircle, Download, RefreshCw, ChevronRight, ChevronLeft, AlertCircle, Edit2, Check, X, ChevronDown, Calendar } from 'lucide-react';
 import Papa from 'papaparse';
 
 // Import task library and questionnaire structure
@@ -1205,11 +1205,9 @@ function App() {
     setEditingMilestoneValue('');
   };
 
-  // Export Project + Milestones CSV (Odoo format)
+  // Export Project CSV (project data only, no milestones)
   const exportProjectCSV = () => {
     if (!generatedPlan) return;
-
-    const language = responses.language || 'English';
 
     // Calculate total allocated hours from input
     let totalHours = 0;
@@ -1244,6 +1242,38 @@ function App() {
       const adoptionDurationMonths = parseInt(responses.adoption_duration_months || 2);
       totalHours += trainingHours + (supportPerMonth * adoptionDurationMonths);
     }
+
+    // Build CSV with ONLY project data (no milestones)
+    const rows = [{
+      'Display Name': responses.project_name || '',
+      'Customer': responses.client_name || '',
+      'Company': '', // Empty as per Odoo format
+      'Project Manager': responses.project_manager || '',
+      'Last Update Status': 'Set Status', // Default value
+      'Status': '', // Empty as per Odoo format
+      'Start Date': responses.project_start_date || '',
+      'Expiration Date': responses.project_deadline || '',
+      'Allocated Time': totalHours
+    }];
+
+    const csv = Papa.unparse(rows);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${responses.project_name?.replace(/\s+/g, '_')}_project.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Export Milestones CSV
+  const exportMilestonesCSV = () => {
+    if (!generatedPlan) return;
+
+    const language = responses.language || 'English';
 
     // Build milestones with deadlines
     const milestones = [];
@@ -1311,40 +1341,12 @@ function App() {
       }
     }
 
-    // Build CSV rows in Odoo format
-    // First row: Project data + first milestone
-    const rows = [];
-    const firstRow = {
-      'Display Name': responses.project_name || '',
-      'Customer': responses.client_name || '',
-      'Company': '', // Empty as per Odoo format
-      'Project Manager': responses.project_manager || '',
-      'Last Update Status': 'Set Status', // Default value
-      'Milestone': milestones[0]?.name || '',
-      'Milestone / Deadline': milestones[0]?.deadline || '',
-      'Status': '', // Empty as per Odoo format
-      'Start Date': responses.project_start_date || '',
-      'Expiration Date': responses.project_deadline || '',
-      'Allocated Time': totalHours
-    };
-    rows.push(firstRow);
-
-    // Additional rows: Only milestone names and deadlines (all other fields empty)
-    for (let i = 1; i < milestones.length; i++) {
-      rows.push({
-        'Display Name': '',
-        'Customer': '',
-        'Company': '',
-        'Project Manager': '',
-        'Last Update Status': '',
-        'Milestone': milestones[i].name,
-        'Milestone / Deadline': milestones[i].deadline,
-        'Status': '',
-        'Start Date': '',
-        'Expiration Date': '',
-        'Allocated Time': ''
-      });
-    }
+    // Build CSV rows - each row is a milestone with its deadline
+    const rows = milestones.map(milestone => ({
+      'Project': responses.project_name || '',
+      'Milestone': milestone.name,
+      'Deadline': milestone.deadline
+    }));
 
     const csv = Papa.unparse(rows);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -1352,7 +1354,7 @@ function App() {
     const url = URL.createObjectURL(blob);
 
     link.setAttribute('href', url);
-    link.setAttribute('download', `${responses.project_name?.replace(/\s+/g, '_')}_project.csv`);
+    link.setAttribute('download', `${responses.project_name?.replace(/\s+/g, '_')}_milestones.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -1399,10 +1401,11 @@ function App() {
     document.body.removeChild(link);
   };
 
-  // Export both CSVs
-  const exportBoth = () => {
+  // Export all three CSVs
+  const exportAll = () => {
     exportProjectCSV();
-    setTimeout(() => exportTasksCSV(), 500); // Small delay to avoid browser blocking
+    setTimeout(() => exportMilestonesCSV(), 500); // Small delay to avoid browser blocking
+    setTimeout(() => exportTasksCSV(), 1000); // Small delay to avoid browser blocking
   };
 
   const resetPlanner = () => {
@@ -2280,7 +2283,7 @@ function App() {
                 </button>
 
                 {showExportDropdown && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                  <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                     <button
                       onClick={() => {
                         exportProjectCSV();
@@ -2291,7 +2294,21 @@ function App() {
                       <FileText className="w-5 h-5 text-blue-600" />
                       <div>
                         <div className="font-semibold text-gray-900">Export Project CSV</div>
-                        <div className="text-xs text-gray-500">Project info + Milestones</div>
+                        <div className="text-xs text-gray-500">Project info only</div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        exportMilestonesCSV();
+                        setShowExportDropdown(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 flex items-center gap-2"
+                    >
+                      <Calendar className="w-5 h-5 text-indigo-600" />
+                      <div>
+                        <div className="font-semibold text-gray-900">Export Milestones CSV</div>
+                        <div className="text-xs text-gray-500">Milestones with deadlines</div>
                       </div>
                     </button>
 
@@ -2311,15 +2328,15 @@ function App() {
 
                     <button
                       onClick={() => {
-                        exportBoth();
+                        exportAll();
                         setShowExportDropdown(false);
                       }}
                       className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors rounded-b-lg flex items-center gap-2"
                     >
                       <Download className="w-5 h-5 text-purple-600" />
                       <div>
-                        <div className="font-semibold text-gray-900">Export Both</div>
-                        <div className="text-xs text-gray-500">Project + Tasks (2 files)</div>
+                        <div className="font-semibold text-gray-900">Export All</div>
+                        <div className="text-xs text-gray-500">Project + Milestones + Tasks (3 files)</div>
                       </div>
                     </button>
                   </div>
