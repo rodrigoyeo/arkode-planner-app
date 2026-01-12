@@ -1,0 +1,150 @@
+{
+  "clarity_deliverables": [
+    {
+      "id": "discovery",
+      "name": "Discovery & Process Mapping",
+      "name_es": "Descubrimiento y Mapeo de Procesos",
+      "description": "Project kickoff, current process mapping, and gap analysis",
+      "description_es": "Kickoff del proyecto, mapeo de procesos actuales y análisis de brechas",
+      "priority": "High",
+      "milestone": "Process Mapping",
+      "milestone_es": "Mapeo de Procesos",
+      "task_patterns": ["Kickoff", "Interview", "Mapping", "Current", "Gap", "Assessment"],
+      "default_hours_percent": 50
+    },
+    {
+      "id": "design",
+      "name": "Solution Design & Master of Implementation",
+      "name_es": "Diseño de Solución y Master of Implementation",
+      "description": "Future process design, customization scoping, and MOI creation",
+      "description_es": "Diseño de procesos futuros, alcance de customizaciones y creación del MOI",
+      "priority": "High",
+      "milestone": "Master of Implementation",
+      "milestone_es": "Master of Implementation",
+      "task_patterns": ["Design", "Future", "TO-BE", "Scoping", "Master", "MOI"],
+      "default_hours_percent": 50
+    }
+  ],
+  "module_deliverable_groups": [
+    {
+      "id": "configuration",
+      "name_template": "{module} Module Configuration & Setup",
+      "name_template_es": "Configuración del Módulo de {module}",
+      "description_template": "Core configuration, setup, and customization for {module}",
+      "description_template_es": "Configuración base, setup y customizaciones para {module}",
+      "priority": "High",
+      "task_patterns": ["Configuration", "Setup", "Settings", "Teams", "Pipeline", "Categories", "Tags", "Rules"],
+      "default_hours_percent": 45
+    },
+    {
+      "id": "integration",
+      "name_template": "{module} Integrations & Automation",
+      "name_template_es": "Integraciones y Automatización de {module}",
+      "description_template": "Integrations, automation rules, and workflows for {module}",
+      "description_template_es": "Integraciones, reglas de automatización y flujos de trabajo para {module}",
+      "priority": "Medium",
+      "task_patterns": ["Integration", "Automation", "Workflow", "Email", "API", "Connect"],
+      "default_hours_percent": 25
+    },
+    {
+      "id": "data_testing",
+      "name_template": "{module} Data Migration & Testing",
+      "name_template_es": "Migración de Datos y Pruebas de {module}",
+      "description_template": "Data migration, validation, and testing for {module}",
+      "description_template_es": "Migración de datos, validación y pruebas para {module}",
+      "priority": "High",
+      "task_patterns": ["Migration", "Data", "Import", "Testing", "Validation", "UAT"],
+      "default_hours_percent": 30
+    }
+  ],
+  "special_deliverables": {
+    "warehouse": {
+      "name": "Multi-Warehouse Configuration",
+      "name_es": "Configuración Multi-Almacén",
+      "description": "Warehouse setup, locations, routes, and inter-warehouse transfers",
+      "description_es": "Configuración de almacenes, ubicaciones, rutas y transferencias inter-almacén",
+      "priority": "High",
+      "hours_per_warehouse": 8
+    },
+    "integration": {
+      "name": "Third-Party Integrations",
+      "name_es": "Integraciones con Terceros",
+      "description": "Setup and configuration of external system integrations",
+      "description_es": "Configuración de integraciones con sistemas externos",
+      "priority": "High",
+      "base_hours": 16
+    },
+    "custom_module": {
+      "name_template": "Custom Module: {name}",
+      "name_template_es": "Módulo Personalizado: {name}",
+      "description_template": "Development and implementation of {name}",
+      "description_template_es": "Desarrollo e implementación de {name}",
+      "priority": "High"
+    },
+    "security": {
+      "name": "User Access & Security Configuration",
+      "name_es": "Configuración de Accesos y Seguridad",
+      "description": "User roles, permissions, and security settings",
+      "description_es": "Roles de usuario, permisos y configuración de seguridad",
+      "priority": "High",
+      "default_hours": 8
+    }
+  },
+  "adoption_deliverables": [
+    {
+      "id": "training",
+      "name": "Training & Knowledge Transfer",
+      "name_es": "Capacitación y Transferencia de Conocimiento",
+      "description": "User training, documentation, and knowledge base setup",
+      "description_es": "Capacitación de usuarios, documentación y configuración de base de conocimiento",
+      "priority": "High",
+      "milestone": "Training & Go-Live",
+      "milestone_es": "Capacitación y Go-Live",
+      "task_patterns": ["Training", "Documentation", "Knowledge", "Material", "Session"],
+      "default_hours_percent": 60
+    },
+    {
+      "id": "golive",
+      "name": "Go-Live & Hypercare Support",
+      "name_es": "Go-Live y Soporte Post-Arranque",
+      "description": "Go-live preparation, launch support, and post-launch hypercare",
+      "description_es": "Preparación para go-live, soporte de lanzamiento y hypercare post-arranque",
+      "priority": "High",
+      "milestone": "Training & Go-Live",
+      "milestone_es": "Capacitación y Go-Live",
+      "task_patterns": ["Go-Live", "Launch", "Support", "Hypercare", "Closure"],
+      "default_hours_percent": 40
+    }
+  ],
+  "milestones_by_phase": {
+    "clarity": [
+      {
+        "name": "Process Mapping",
+        "name_es": "Mapeo de Procesos",
+        "weeks_from_start": 2
+      },
+      {
+        "name": "Findings & TO-BE",
+        "name_es": "Hallazgos y TO-BE",
+        "weeks_from_start": 3
+      },
+      {
+        "name": "Master of Implementation",
+        "name_es": "Master of Implementation",
+        "weeks_from_start": 4
+      }
+    ],
+    "implementation": {
+      "per_module": true,
+      "name_template": "Implementation of {module} Module",
+      "name_template_es": "Implementación del Módulo de {module}"
+    },
+    "adoption": [
+      {
+        "name": "Training & Go-Live",
+        "name_es": "Capacitación y Go-Live",
+        "at_deadline": true
+      }
+    ]
+  }
+}

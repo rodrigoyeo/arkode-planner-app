@@ -1,0 +1,106 @@
+{
+  "metadata": {
+    "version": "3.1.0",
+    "description": "Simplified questionnaire with hours per module"
+  },
+
+  "sections": [
+    {
+      "id": "template_selection",
+      "title": "Choose Your Project Template",
+      "title_es": "Elige tu Plantilla de Proyecto",
+      "description": "Select a template to pre-fill common settings",
+      "description_es": "Selecciona una plantilla para pre-llenar configuraciones comunes",
+      "type": "template_selector"
+    },
+
+    {
+      "id": "project_basics",
+      "title": "Project Information",
+      "title_es": "Información del Proyecto",
+      "description": "Basic details about your project",
+      "description_es": "Detalles básicos de tu proyecto",
+      "questions": [
+        {
+          "id": "project_name",
+          "question": "Project Name",
+          "question_es": "Nombre del Proyecto",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., EAS Systems - Odoo Implementation 2025"
+        },
+        {
+          "id": "client_name",
+          "question": "Client Company Name",
+          "question_es": "Nombre de la Empresa Cliente",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., EAS Systems"
+        },
+        {
+          "id": "language",
+          "question": "Plan Language",
+          "question_es": "Idioma del Plan",
+          "type": "select",
+          "required": true,
+          "default": "English",
+          "options": ["English", "Spanish"]
+        },
+        {
+          "id": "project_manager",
+          "question": "Arkode Project Manager",
+          "question_es": "Gerente de Proyecto Arkode",
+          "type": "select",
+          "required": false,
+          "options": [
+            "Luis Angel Muñoz Zermeño",
+            "Jose Ricardo Gomez Duran",
+            "Josué Isaías Torres Gonzalez",
+            "José De Jesus Ruvalcaba Luna",
+            "Rodrigo Yeo",
+            "Martin Zollneritsch",
+            "Salvador Perez Barrera"
+          ]
+        },
+        {
+          "id": "team_members",
+          "question": "Arkode Team Members",
+          "question_es": "Miembros del Equipo Arkode",
+          "type": "multiselect",
+          "required": false,
+          "options": [
+            {"value": "Luis Angel Muñoz Zermeño", "label": "Luis Angel Muñoz Zermeño", "role": "Process Consultant"},
+            {"value": "Jose Ricardo Gomez Duran", "label": "Jose Ricardo Gomez Duran", "role": "Process Consultant"},
+            {"value": "Josué Isaías Torres Gonzalez", "label": "Josué Isaías Torres Gonzalez", "role": "Process Consultant"},
+            {"value": "José De Jesus Ruvalcaba Luna", "label": "José De Jesus Ruvalcaba Luna", "role": "Odoo Developer"},
+            {"value": "Martin Zollneritsch", "label": "Martin Zollneritsch", "role": "Process Consultant"},
+            {"value": "Salvador Perez Barrera", "label": "Salvador Perez Barrera", "role": "Process Consultant"}
+          ]
+        },
+        {
+          "id": "project_start_date",
+          "question": "Project Start Date",
+          "question_es": "Fecha de Inicio del Proyecto",
+          "type": "date",
+          "required": false
+        },
+        {
+          "id": "project_deadline",
+          "question": "Project Deadline",
+          "question_es": "Fecha Límite del Proyecto",
+          "type": "date",
+          "required": true
+        }
+      ]
+    },
+
+    {
+      "id": "phase_configuration",
+      "title": "Project Scope & Configuration",
+      "title_es": "Alcance y Configuración del Proyecto",
+      "description": "Configure phases, modules, and hours for your implementation",
+      "description_es": "Configura fases, módulos y horas para tu implementación",
+      "type": "phase_configurator"
+    }
+  ]
+}

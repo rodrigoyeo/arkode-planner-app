@@ -1,0 +1,141 @@
+{
+  "templates": [
+    {
+      "id": "startup",
+      "name": "Startup / Small Business",
+      "name_es": "Startup / Negocio Pequeño",
+      "description": "Quick implementation for 5-20 employees with basic operations",
+      "description_es": "Implementación rápida para 5-20 empleados con operaciones básicas",
+      "icon": "Rocket",
+      "color": "emerald",
+      "target_deliverables": 15,
+      "phases": {
+        "clarity": {
+          "enabled": true,
+          "weeks": 2,
+          "hours": 20
+        },
+        "implementation": {
+          "enabled": true,
+          "weeks": 4,
+          "hours": 60
+        },
+        "adoption": {
+          "enabled": true,
+          "weeks": 2,
+          "hours": 20
+        }
+      },
+      "modules": ["CRM", "Sales", "Inventory"],
+      "features": {
+        "integrations": false,
+        "multi_warehouse": false,
+        "custom_modules": 0,
+        "ai_customization": false
+      },
+      "support_months": 1
+    },
+    {
+      "id": "growing",
+      "name": "Growing Company",
+      "name_es": "Empresa en Crecimiento",
+      "description": "Comprehensive setup for 20-100 employees with multiple departments",
+      "description_es": "Configuración completa para 20-100 empleados con múltiples departamentos",
+      "icon": "TrendingUp",
+      "color": "blue",
+      "target_deliverables": 20,
+      "phases": {
+        "clarity": {
+          "enabled": true,
+          "weeks": 3,
+          "hours": 40
+        },
+        "implementation": {
+          "enabled": true,
+          "weeks": 8,
+          "hours": 120
+        },
+        "adoption": {
+          "enabled": true,
+          "weeks": 3,
+          "hours": 40
+        }
+      },
+      "modules": ["CRM", "Sales", "Purchase", "Inventory", "Accounting"],
+      "features": {
+        "integrations": false,
+        "multi_warehouse": true,
+        "warehouse_count": 2,
+        "custom_modules": 1,
+        "ai_customization": true
+      },
+      "support_months": 2
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise",
+      "name_es": "Empresa Grande",
+      "description": "Full-scale implementation for 100+ employees with complex operations",
+      "description_es": "Implementación completa para 100+ empleados con operaciones complejas",
+      "icon": "Building2",
+      "color": "purple",
+      "target_deliverables": 25,
+      "phases": {
+        "clarity": {
+          "enabled": true,
+          "weeks": 4,
+          "hours": 65
+        },
+        "implementation": {
+          "enabled": true,
+          "weeks": 12,
+          "hours": 200
+        },
+        "adoption": {
+          "enabled": true,
+          "weeks": 4,
+          "hours": 60
+        }
+      },
+      "modules": ["CRM", "Sales", "Purchase", "Inventory", "Accounting", "Manufacturing", "Projects"],
+      "features": {
+        "integrations": true,
+        "multi_warehouse": true,
+        "warehouse_count": 3,
+        "custom_modules": 3,
+        "ai_customization": true
+      },
+      "support_months": 3
+    },
+    {
+      "id": "custom",
+      "name": "Custom Configuration",
+      "name_es": "Configuración Personalizada",
+      "description": "Full control over all settings for unique project requirements",
+      "description_es": "Control total sobre todas las configuraciones para requisitos únicos",
+      "icon": "Settings",
+      "color": "gray",
+      "target_deliverables": null,
+      "phases": null,
+      "modules": null,
+      "features": null,
+      "support_months": null
+    }
+  ],
+  "available_modules": [
+    { "value": "CRM", "label": "CRM", "label_es": "CRM", "popular": true },
+    { "value": "Sales", "label": "Sales", "label_es": "Ventas", "popular": true },
+    { "value": "Purchase", "label": "Purchase", "label_es": "Compras", "popular": true },
+    { "value": "Inventory", "label": "Inventory", "label_es": "Inventario", "popular": true },
+    { "value": "Accounting", "label": "Accounting", "label_es": "Contabilidad", "popular": true },
+    { "value": "Projects", "label": "Projects", "label_es": "Proyectos", "popular": true },
+    { "value": "FSM", "label": "Field Service", "label_es": "Servicio de Campo", "popular": true },
+    { "value": "Expenses", "label": "Expenses", "label_es": "Gastos", "popular": true },
+    { "value": "Manufacturing", "label": "Manufacturing", "label_es": "Manufactura", "popular": false },
+    { "value": "eCommerce", "label": "eCommerce", "label_es": "eCommerce", "popular": false },
+    { "value": "POS", "label": "Point of Sale", "label_es": "Punto de Venta", "popular": false },
+    { "value": "HR", "label": "HR", "label_es": "RRHH", "popular": false },
+    { "value": "Payroll", "label": "Payroll", "label_es": "Nómina", "popular": false },
+    { "value": "Helpdesk", "label": "Helpdesk", "label_es": "Mesa de Ayuda", "popular": false }
+  ]
+}

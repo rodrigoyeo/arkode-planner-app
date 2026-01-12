@@ -1,0 +1,1386 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "odoo_version": "19.0",
+    "last_updated": "2025-11-06",
+    "description": "Task library for Odoo implementation projects at Arkode"
+  },
+
+  "clarity_phase": {
+    "description": "Discovery and requirements gathering phase",
+    "standard_tasks": [
+      {
+        "name": "Project Kickoff Meeting",
+        "description": "Initial meeting with stakeholders to align on project scope, timeline, and success criteria",
+        "estimated_hours": 2,
+        "priority": "High",
+        "category": "Project Management",
+        "tags": ["Clarity", "Kickoff"]
+      },
+      {
+        "name": "Stakeholder Interviews",
+        "description": "Conduct interviews with key stakeholders to understand business requirements and pain points",
+        "estimated_hours": 8,
+        "priority": "High",
+        "category": "Requirements Gathering",
+        "tags": ["Clarity", "Discovery"]
+      },
+      {
+        "name": "Current Process Mapping",
+        "description": "Document client's current business processes (as-is) across all departments",
+        "estimated_hours": 12,
+        "priority": "High",
+        "category": "Process Analysis",
+        "tags": ["Clarity", "Process Mapping"]
+      },
+      {
+        "name": "Gap Analysis Workshop",
+        "description": "Identify gaps between current processes and Odoo standard functionality",
+        "estimated_hours": 6,
+        "priority": "High",
+        "category": "Analysis",
+        "tags": ["Clarity", "Gap Analysis"]
+      },
+      {
+        "name": "Future Process Design (To-Be)",
+        "description": "Design optimized future-state processes leveraging Odoo best practices",
+        "estimated_hours": 10,
+        "priority": "High",
+        "category": "Process Design",
+        "tags": ["Clarity", "Process Design"]
+      },
+      {
+        "name": "Data Migration Assessment",
+        "description": "Evaluate existing data quality, structure, and migration requirements",
+        "estimated_hours": 4,
+        "priority": "Medium",
+        "category": "Data Analysis",
+        "tags": ["Clarity", "Data Migration"]
+      },
+      {
+        "name": "Integration Requirements Analysis",
+        "description": "Identify all third-party systems requiring integration with Odoo",
+        "estimated_hours": 4,
+        "priority": "Medium",
+        "category": "Integration Analysis",
+        "tags": ["Clarity", "Integrations"]
+      },
+      {
+        "name": "Customization Scoping",
+        "description": "Document customizations needed beyond standard Odoo functionality",
+        "estimated_hours": 6,
+        "priority": "High",
+        "category": "Scoping",
+        "tags": ["Clarity", "Customization"]
+      },
+      {
+        "name": "User Access & Security Design",
+        "description": "Define user roles, permissions, and security requirements",
+        "estimated_hours": 3,
+        "priority": "Medium",
+        "category": "Security",
+        "tags": ["Clarity", "Security"]
+      },
+      {
+        "name": "Solution Proposal Document",
+        "description": "Create comprehensive solution document with process flows and configuration plan",
+        "estimated_hours": 8,
+        "priority": "High",
+        "category": "Documentation",
+        "tags": ["Clarity", "Documentation"]
+      },
+      {
+        "name": "Clarity Phase Review & Sign-off",
+        "description": "Present findings and get stakeholder approval to proceed to implementation",
+        "estimated_hours": 2,
+        "priority": "High",
+        "category": "Project Management",
+        "tags": ["Clarity", "Sign-off"]
+      }
+    ]
+  },
+
+  "adoption_phase": {
+    "description": "Training and change management phase",
+    "standard_tasks": [
+      {
+        "name": "Training Material Preparation",
+        "description": "Create training guides, videos, and documentation tailored to client's processes",
+        "estimated_hours": 8,
+        "priority": "High",
+        "category": "Training Preparation",
+        "tags": ["Adoption", "Training"]
+      },
+      {
+        "name": "Admin/Super User Training",
+        "description": "Train system administrators and super users on system configuration and maintenance",
+        "estimated_hours": 8,
+        "priority": "High",
+        "category": "Training Delivery",
+        "tags": ["Adoption", "Training", "Admin"]
+      },
+      {
+        "name": "End User Training Sessions",
+        "description": "Conduct role-based training sessions for end users by department/module",
+        "estimated_hours": 16,
+        "priority": "High",
+        "category": "Training Delivery",
+        "tags": ["Adoption", "Training", "End Users"]
+      },
+      {
+        "name": "Go-Live Preparation",
+        "description": "Final system checks, cutover planning, and go-live readiness assessment",
+        "estimated_hours": 4,
+        "priority": "High",
+        "category": "Go-Live",
+        "tags": ["Adoption", "Go-Live"]
+      },
+      {
+        "name": "Go-Live Support (Day 1-3)",
+        "description": "Intensive on-site or remote support during first days of live operation",
+        "estimated_hours": 12,
+        "priority": "High",
+        "category": "Go-Live Support",
+        "tags": ["Adoption", "Go-Live", "Support"]
+      },
+      {
+        "name": "Post Go-Live Support (Week 1-2)",
+        "description": "Ongoing support to address questions and issues as users adopt the system",
+        "estimated_hours": 16,
+        "priority": "High",
+        "category": "Post Go-Live Support",
+        "tags": ["Adoption", "Support"]
+      },
+      {
+        "name": "User Adoption Monitoring",
+        "description": "Track usage metrics and identify areas needing additional support or training",
+        "estimated_hours": 4,
+        "priority": "Medium",
+        "category": "Change Management",
+        "tags": ["Adoption", "Monitoring"]
+      },
+      {
+        "name": "Knowledge Base Setup",
+        "description": "Create internal knowledge base with FAQs, tips, and troubleshooting guides",
+        "estimated_hours": 6,
+        "priority": "Medium",
+        "category": "Documentation",
+        "tags": ["Adoption", "Documentation"]
+      },
+      {
+        "name": "Hypercare Period Support (Week 3-4)",
+        "description": "Extended support period to ensure smooth stabilization of operations",
+        "estimated_hours": 8,
+        "priority": "Medium",
+        "category": "Support",
+        "tags": ["Adoption", "Support"]
+      },
+      {
+        "name": "Project Closure & Handover",
+        "description": "Final project review, lessons learned, and handover to ongoing support team",
+        "estimated_hours": 2,
+        "priority": "High",
+        "category": "Project Management",
+        "tags": ["Adoption", "Closure"]
+      }
+    ]
+  },
+
+  "modules": {
+    "CRM": {
+      "description": "Customer Relationship Management module for managing leads, opportunities, and sales pipeline",
+      "odoo_documentation": "https://www.odoo.com/documentation/19.0/applications/sales/crm.html",
+      "implementation_tasks": [
+        {
+          "name": "CRM Configuration - Pipeline Stages",
+          "description": "Configure pipeline stages for lead and opportunity management (New, Qualified, Proposition, Won, Lost)",
+          "estimated_hours": 2,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "CRM > Configuration > Stages",
+          "tags": ["Implementation", "CRM", "Configuration"]
+        },
+        {
+          "name": "CRM Configuration - Sales Teams",
+          "description": "Set up sales teams, territories, and team members with quotas and targets",
+          "estimated_hours": 3,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "CRM > Configuration > Sales Teams",
+          "tags": ["Implementation", "CRM", "Configuration"]
+        },
+        {
+          "name": "CRM Configuration - Lead Scoring Rules",
+          "description": "Configure AI-assisted lead scoring based on client's qualification criteria",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "CRM > Configuration > Lead Scoring",
+          "tags": ["Implementation", "CRM", "AI"]
+        },
+        {
+          "name": "CRM Configuration - Automated Assignment Rules",
+          "description": "Set up automated lead/opportunity assignment to sales team members",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Automation",
+          "odoo_feature": "CRM > Configuration > Assignment Rules",
+          "tags": ["Implementation", "CRM", "Automation"]
+        },
+        {
+          "name": "CRM Configuration - Activities & Next Actions",
+          "description": "Configure activity types (calls, meetings, emails) and automated activity scheduling",
+          "estimated_hours": 2,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "CRM > Configuration > Activity Types",
+          "tags": ["Implementation", "CRM", "Configuration"]
+        },
+        {
+          "name": "CRM Email Integration",
+          "description": "Integrate email (Gmail/Outlook) for lead capture and communication tracking",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Integration",
+          "odoo_feature": "CRM > Configuration > Email Integration",
+          "tags": ["Implementation", "CRM", "Integration"]
+        },
+        {
+          "name": "CRM Live Chat Integration",
+          "description": "Set up live chat widget on website for automatic lead generation",
+          "estimated_hours": 3,
+          "priority": "Low",
+          "category": "Integration",
+          "odoo_feature": "Live Chat > Configuration",
+          "tags": ["Implementation", "CRM", "Integration"]
+        },
+        {
+          "name": "CRM Lost Reasons Configuration",
+          "description": "Define lost reasons for opportunities to track why deals are lost",
+          "estimated_hours": 1,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "CRM > Configuration > Lost Reasons",
+          "tags": ["Implementation", "CRM", "Configuration"]
+        },
+        {
+          "name": "CRM Tags & Categorization",
+          "description": "Set up tags for lead/opportunity categorization and filtering",
+          "estimated_hours": 1,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "CRM > Configuration > Tags",
+          "tags": ["Implementation", "CRM", "Configuration"]
+        },
+        {
+          "name": "CRM Dashboards & Reports",
+          "description": "Configure CRM dashboards, pipeline analysis, and sales forecasting reports",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Reporting",
+          "odoo_feature": "CRM > Reporting",
+          "tags": ["Implementation", "CRM", "Reporting"]
+        },
+        {
+          "name": "CRM Data Migration - Leads & Opportunities",
+          "description": "Import historical leads and opportunities from legacy CRM system",
+          "estimated_hours": 8,
+          "priority": "High",
+          "category": "Data Migration",
+          "odoo_feature": "CRM > Favorites > Import",
+          "tags": ["Implementation", "CRM", "Data Migration"]
+        },
+        {
+          "name": "CRM Testing & Validation",
+          "description": "Test CRM workflows, automations, and integrations with sample data",
+          "estimated_hours": 6,
+          "priority": "High",
+          "category": "Testing",
+          "tags": ["Implementation", "CRM", "Testing"]
+        }
+      ]
+    },
+
+    "Sales": {
+      "description": "Sales Order Management module for quotations, orders, and invoicing",
+      "odoo_documentation": "https://www.odoo.com/documentation/19.0/applications/sales/sales.html",
+      "implementation_tasks": [
+        {
+          "name": "Sales Configuration - Product Catalog Setup",
+          "description": "Configure products/services with pricing, descriptions, and categories",
+          "estimated_hours": 8,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Sales > Products > Products",
+          "tags": ["Implementation", "Sales", "Products"]
+        },
+        {
+          "name": "Sales Configuration - Pricelists",
+          "description": "Set up customer-specific pricelists, discounts, and pricing rules",
+          "estimated_hours": 6,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Sales > Configuration > Pricelists",
+          "tags": ["Implementation", "Sales", "Pricing"]
+        },
+        {
+          "name": "Sales Configuration - Quotation Templates",
+          "description": "Create reusable quotation templates for common product/service bundles",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Sales > Configuration > Quotation Templates",
+          "tags": ["Implementation", "Sales", "Configuration"]
+        },
+        {
+          "name": "Sales Configuration - Terms & Conditions",
+          "description": "Configure default terms and conditions for quotations and sales orders",
+          "estimated_hours": 2,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Sales > Configuration > Settings",
+          "tags": ["Implementation", "Sales", "Configuration"]
+        },
+        {
+          "name": "Sales Configuration - Payment Terms",
+          "description": "Set up payment terms (Net 30, 50% upfront, etc.) and invoicing policies",
+          "estimated_hours": 2,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > Payment Terms",
+          "tags": ["Implementation", "Sales", "Configuration"]
+        },
+        {
+          "name": "Sales Configuration - Sales Teams & Salespeople",
+          "description": "Configure sales teams and assign salespeople with targets",
+          "estimated_hours": 2,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Sales > Configuration > Sales Teams",
+          "tags": ["Implementation", "Sales", "Configuration"]
+        },
+        {
+          "name": "Sales Online Quotations & e-Signature",
+          "description": "Enable online quotation portal with electronic signature and payment",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Sales > Configuration > Online Signature",
+          "tags": ["Implementation", "Sales", "Portal"]
+        },
+        {
+          "name": "Sales Product Variants Configuration",
+          "description": "Set up product variants (size, color, etc.) with attribute-based pricing",
+          "estimated_hours": 6,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Sales > Products > Product Variants",
+          "tags": ["Implementation", "Sales", "Products"]
+        },
+        {
+          "name": "Sales Optional Products & Cross-sell",
+          "description": "Configure optional products and cross-sell suggestions in quotations",
+          "estimated_hours": 3,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Sales > Products > Optional Products",
+          "tags": ["Implementation", "Sales", "Products"]
+        },
+        {
+          "name": "Sales Invoicing Configuration",
+          "description": "Configure invoicing policy (on delivery, on order, milestones)",
+          "estimated_hours": 3,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Sales > Configuration > Invoicing",
+          "tags": ["Implementation", "Sales", "Invoicing"]
+        },
+        {
+          "name": "Sales Delivery Methods & Shipping",
+          "description": "Set up delivery methods, shipping costs, and carrier integration",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Sales > Configuration > Delivery Methods",
+          "tags": ["Implementation", "Sales", "Delivery"]
+        },
+        {
+          "name": "Sales Subscription Products (if applicable)",
+          "description": "Configure recurring products and subscription plans",
+          "estimated_hours": 5,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Subscriptions > Products",
+          "tags": ["Implementation", "Sales", "Subscriptions"]
+        },
+        {
+          "name": "Sales Reports & Analytics",
+          "description": "Configure sales dashboards, revenue analysis, and performance reports",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Reporting",
+          "odoo_feature": "Sales > Reporting",
+          "tags": ["Implementation", "Sales", "Reporting"]
+        },
+        {
+          "name": "Sales Data Migration - Products & Customers",
+          "description": "Import products, customers, and historical sales orders",
+          "estimated_hours": 10,
+          "priority": "High",
+          "category": "Data Migration",
+          "tags": ["Implementation", "Sales", "Data Migration"]
+        },
+        {
+          "name": "Sales Testing & Validation",
+          "description": "Test quotation-to-order-to-invoice workflow with various scenarios",
+          "estimated_hours": 6,
+          "priority": "High",
+          "category": "Testing",
+          "tags": ["Implementation", "Sales", "Testing"]
+        }
+      ]
+    },
+
+    "Purchase": {
+      "description": "Purchase Order Management module for procurement and vendor management",
+      "odoo_documentation": "https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/purchase.html",
+      "implementation_tasks": [
+        {
+          "name": "Purchase Configuration - Vendor Setup",
+          "description": "Configure vendors with contact details, payment terms, and delivery addresses",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Purchase > Vendors",
+          "tags": ["Implementation", "Purchase", "Vendors"]
+        },
+        {
+          "name": "Purchase Configuration - Product Categories",
+          "description": "Set up product categories for purchased goods with default accounts",
+          "estimated_hours": 2,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Configuration > Product Categories",
+          "tags": ["Implementation", "Purchase", "Configuration"]
+        },
+        {
+          "name": "Purchase Configuration - Vendor Pricelists",
+          "description": "Configure vendor-specific pricelists and purchase agreements",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Purchase > Configuration > Vendor Pricelists",
+          "tags": ["Implementation", "Purchase", "Pricing"]
+        },
+        {
+          "name": "Purchase Approval Workflow",
+          "description": "Set up multi-level approval workflow for purchase orders based on amount thresholds",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Workflow",
+          "odoo_feature": "Purchase > Configuration > Settings > Approval",
+          "tags": ["Implementation", "Purchase", "Approvals"]
+        },
+        {
+          "name": "Purchase Requisition Configuration",
+          "description": "Configure purchase requisitions (calls for tenders) for competitive bidding",
+          "estimated_hours": 3,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Purchase > Purchase Agreements",
+          "tags": ["Implementation", "Purchase", "Configuration"]
+        },
+        {
+          "name": "Purchase Configuration - Reordering Rules",
+          "description": "Set up automated reordering rules to generate purchase orders when stock is low",
+          "estimated_hours": 5,
+          "priority": "High",
+          "category": "Automation",
+          "odoo_feature": "Inventory > Configuration > Reordering Rules",
+          "tags": ["Implementation", "Purchase", "Automation"]
+        },
+        {
+          "name": "Purchase Dropshipping Configuration",
+          "description": "Configure dropshipping workflow where vendors ship directly to customers",
+          "estimated_hours": 4,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Configuration > Routes > Dropship",
+          "tags": ["Implementation", "Purchase", "Dropshipping"]
+        },
+        {
+          "name": "Purchase 3-Way Matching Configuration",
+          "description": "Enable 3-way matching (PO, Receipt, Vendor Bill) for invoice validation",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Purchase > Configuration > 3-Way Matching",
+          "tags": ["Implementation", "Purchase", "Accounting"]
+        },
+        {
+          "name": "Purchase Vendor Bill Digitization (OCR)",
+          "description": "Configure OCR for automatic vendor bill scanning and data extraction",
+          "estimated_hours": 3,
+          "priority": "Low",
+          "category": "Automation",
+          "odoo_feature": "Accounting > Vendors > Digitize",
+          "tags": ["Implementation", "Purchase", "OCR", "AI"]
+        },
+        {
+          "name": "Purchase Reports & Analytics",
+          "description": "Configure purchase analysis, vendor performance, and spend reports",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Reporting",
+          "odoo_feature": "Purchase > Reporting",
+          "tags": ["Implementation", "Purchase", "Reporting"]
+        },
+        {
+          "name": "Purchase Data Migration - Vendors & Products",
+          "description": "Import vendor master data and purchasable product catalog",
+          "estimated_hours": 6,
+          "priority": "High",
+          "category": "Data Migration",
+          "tags": ["Implementation", "Purchase", "Data Migration"]
+        },
+        {
+          "name": "Purchase Testing & Validation",
+          "description": "Test purchase requisition to PO to receipt to vendor bill workflow",
+          "estimated_hours": 5,
+          "priority": "High",
+          "category": "Testing",
+          "tags": ["Implementation", "Purchase", "Testing"]
+        }
+      ]
+    },
+
+    "Inventory": {
+      "description": "Inventory & Warehouse Management module for stock control and logistics",
+      "odoo_documentation": "https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/inventory.html",
+      "implementation_tasks": [
+        {
+          "name": "Inventory Configuration - Warehouse Setup",
+          "description": "Configure warehouse(s) with locations, routes, and operational flows",
+          "estimated_hours": 6,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Configuration > Warehouses",
+          "tags": ["Implementation", "Inventory", "Warehouse"]
+        },
+        {
+          "name": "Inventory Configuration - Locations & Storage",
+          "description": "Set up storage locations hierarchy (zones, aisles, shelves, bins)",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Configuration > Locations",
+          "tags": ["Implementation", "Inventory", "Locations"]
+        },
+        {
+          "name": "Inventory Multi-Step Routes Configuration",
+          "description": "Configure multi-step receipt (1/2/3-step) and delivery flows",
+          "estimated_hours": 5,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Configuration > Warehouses > Routes",
+          "tags": ["Implementation", "Inventory", "Routes"]
+        },
+        {
+          "name": "Inventory Lot & Serial Number Tracking",
+          "description": "Enable and configure lot/serial number tracking for traceability (enhanced in v19)",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Configuration > Traceability",
+          "tags": ["Implementation", "Inventory", "Traceability"]
+        },
+        {
+          "name": "Inventory Barcode Scanning Setup",
+          "description": "Configure barcode app for mobile picking, packing, and inventory adjustments (reworked in v19)",
+          "estimated_hours": 6,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Barcode > Configuration",
+          "tags": ["Implementation", "Inventory", "Barcode"]
+        },
+        {
+          "name": "Inventory Reordering Rules & Automated Replenishment",
+          "description": "Set up min/max reordering rules for automated stock replenishment",
+          "estimated_hours": 5,
+          "priority": "High",
+          "category": "Automation",
+          "odoo_feature": "Inventory > Configuration > Reordering Rules",
+          "tags": ["Implementation", "Inventory", "Automation"]
+        },
+        {
+          "name": "Inventory Batch Transfers Configuration",
+          "description": "Configure batch picking and transfer operations for warehouse efficiency",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Operations > Batch Transfers",
+          "tags": ["Implementation", "Inventory", "Batch"]
+        },
+        {
+          "name": "Inventory Cycle Counting Setup",
+          "description": "Configure cycle counting during operations for continuous inventory accuracy",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Operations > Cycle Counts",
+          "tags": ["Implementation", "Inventory", "Cycle Count"]
+        },
+        {
+          "name": "Inventory Valuation Configuration",
+          "description": "Set up inventory valuation methods (FIFO, AVCO) and automated accounting entries",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Configuration > Valuation",
+          "tags": ["Implementation", "Inventory", "Accounting"]
+        },
+        {
+          "name": "Inventory Product Categories & UoM",
+          "description": "Configure product categories, units of measure, and conversions",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Configuration > Product Categories",
+          "tags": ["Implementation", "Inventory", "Configuration"]
+        },
+        {
+          "name": "Inventory Delivery Methods & Shipping",
+          "description": "Set up delivery carriers and shipping integration (UPS, FedEx, etc.)",
+          "estimated_hours": 5,
+          "priority": "Medium",
+          "category": "Integration",
+          "odoo_feature": "Inventory > Configuration > Delivery Methods",
+          "tags": ["Implementation", "Inventory", "Shipping"]
+        },
+        {
+          "name": "Inventory Scrap & Quality Control",
+          "description": "Configure scrap management and quality control checkpoints",
+          "estimated_hours": 3,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Inventory > Operations > Scrap",
+          "tags": ["Implementation", "Inventory", "Quality"]
+        },
+        {
+          "name": "Inventory Reports & Dashboards",
+          "description": "Configure inventory valuation, stock movement, and warehouse performance reports",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Reporting",
+          "odoo_feature": "Inventory > Reporting",
+          "tags": ["Implementation", "Inventory", "Reporting"]
+        },
+        {
+          "name": "Inventory Data Migration - Opening Stock",
+          "description": "Import opening stock balances by location and product",
+          "estimated_hours": 8,
+          "priority": "High",
+          "category": "Data Migration",
+          "tags": ["Implementation", "Inventory", "Data Migration"]
+        },
+        {
+          "name": "Inventory Testing & Validation",
+          "description": "Test full warehouse workflows including receipts, transfers, deliveries, and adjustments",
+          "estimated_hours": 8,
+          "priority": "High",
+          "category": "Testing",
+          "tags": ["Implementation", "Inventory", "Testing"]
+        }
+      ]
+    },
+
+    "Manufacturing": {
+      "description": "Manufacturing module for production planning and shop floor management",
+      "odoo_documentation": "https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/manufacturing.html",
+      "implementation_tasks": [
+        {
+          "name": "Manufacturing Configuration - Bill of Materials (BoM)",
+          "description": "Create bills of materials for all manufactured products with components and quantities",
+          "estimated_hours": 12,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Manufacturing > Master Data > Bills of Materials",
+          "tags": ["Implementation", "Manufacturing", "BoM"]
+        },
+        {
+          "name": "Manufacturing Configuration - Work Centers",
+          "description": "Set up work centers (machines, stations) with capacity and efficiency rates",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Manufacturing > Configuration > Work Centers",
+          "tags": ["Implementation", "Manufacturing", "Work Centers"]
+        },
+        {
+          "name": "Manufacturing Configuration - Routing & Operations",
+          "description": "Configure manufacturing routings with operations sequence and work center assignments",
+          "estimated_hours": 6,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Manufacturing > Master Data > Routings",
+          "tags": ["Implementation", "Manufacturing", "Routing"]
+        },
+        {
+          "name": "Manufacturing MTO/MTS Strategy",
+          "description": "Configure make-to-order (MTO) vs make-to-stock (MTS) manufacturing strategies",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Manufacturing > Configuration > Routes",
+          "tags": ["Implementation", "Manufacturing", "Strategy"]
+        },
+        {
+          "name": "Manufacturing Byproducts Configuration",
+          "description": "Set up byproducts and co-products in manufacturing processes",
+          "estimated_hours": 2,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Manufacturing > Bills of Materials > Byproducts",
+          "tags": ["Implementation", "Manufacturing", "BoM"]
+        },
+        {
+          "name": "Manufacturing Quality Control Points",
+          "description": "Configure quality control checkpoints during production operations",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Quality > Quality Control Points",
+          "tags": ["Implementation", "Manufacturing", "Quality"]
+        },
+        {
+          "name": "Manufacturing Work Order Tablet View",
+          "description": "Configure shop floor tablet interface for work order execution",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Manufacturing > Work Orders > Tablet View",
+          "tags": ["Implementation", "Manufacturing", "Shop Floor"]
+        },
+        {
+          "name": "Manufacturing Subcontracting Setup",
+          "description": "Configure subcontracting workflows for outsourced manufacturing operations",
+          "estimated_hours": 5,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Manufacturing > Configuration > Subcontracting",
+          "tags": ["Implementation", "Manufacturing", "Subcontracting"]
+        },
+        {
+          "name": "Manufacturing Planning & Scheduling",
+          "description": "Set up master production schedule and capacity planning",
+          "estimated_hours": 5,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Manufacturing > Planning",
+          "tags": ["Implementation", "Manufacturing", "Planning"]
+        },
+        {
+          "name": "Manufacturing Maintenance Management",
+          "description": "Configure preventive maintenance schedules for equipment and work centers",
+          "estimated_hours": 4,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Maintenance > Equipment",
+          "tags": ["Implementation", "Manufacturing", "Maintenance"]
+        },
+        {
+          "name": "Manufacturing Cost Structure",
+          "description": "Configure manufacturing cost tracking (materials, labor, overhead)",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Manufacturing > Configuration > Costing",
+          "tags": ["Implementation", "Manufacturing", "Costing"]
+        },
+        {
+          "name": "Manufacturing Reports & Analytics",
+          "description": "Configure production analysis, efficiency reports, and work center performance",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Reporting",
+          "odoo_feature": "Manufacturing > Reporting",
+          "tags": ["Implementation", "Manufacturing", "Reporting"]
+        },
+        {
+          "name": "Manufacturing Data Migration - BoMs & Work Centers",
+          "description": "Import bills of materials, routings, and work center master data",
+          "estimated_hours": 10,
+          "priority": "High",
+          "category": "Data Migration",
+          "tags": ["Implementation", "Manufacturing", "Data Migration"]
+        },
+        {
+          "name": "Manufacturing Testing & Validation",
+          "description": "Test complete manufacturing cycle from MO creation to finished goods",
+          "estimated_hours": 8,
+          "priority": "High",
+          "category": "Testing",
+          "tags": ["Implementation", "Manufacturing", "Testing"]
+        }
+      ]
+    },
+
+    "Projects": {
+      "description": "Project Management module for task planning and time tracking",
+      "odoo_documentation": "https://www.odoo.com/documentation/19.0/applications/services/project.html",
+      "implementation_tasks": [
+        {
+          "name": "Projects Configuration - Project Templates",
+          "description": "Create reusable project templates for common project types",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Project > Configuration > Project Templates",
+          "tags": ["Implementation", "Projects", "Templates"]
+        },
+        {
+          "name": "Projects Configuration - Task Stages",
+          "description": "Configure task stages (New, In Progress, Done, etc.) by project type",
+          "estimated_hours": 2,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Project > Configuration > Stages",
+          "tags": ["Implementation", "Projects", "Configuration"]
+        },
+        {
+          "name": "Projects Configuration - Milestones",
+          "description": "Enable and configure project milestones for deliverable tracking",
+          "estimated_hours": 2,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Project > Configuration > Milestones",
+          "tags": ["Implementation", "Projects", "Milestones"]
+        },
+        {
+          "name": "Projects Timesheet Configuration",
+          "description": "Set up timesheet tracking and integration with payroll/invoicing",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Timesheets > Configuration",
+          "tags": ["Implementation", "Projects", "Timesheets"]
+        },
+        {
+          "name": "Projects Task Dependencies",
+          "description": "Configure task dependencies and critical path tracking",
+          "estimated_hours": 3,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Project > Tasks > Dependencies",
+          "tags": ["Implementation", "Projects", "Dependencies"]
+        },
+        {
+          "name": "Projects Billable Projects Setup",
+          "description": "Configure billable projects with time & materials or fixed price billing",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Project > Configuration > Billing",
+          "tags": ["Implementation", "Projects", "Billing"]
+        },
+        {
+          "name": "Projects Resource Planning",
+          "description": "Set up resource allocation and planning view for team capacity",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Planning > Resources",
+          "tags": ["Implementation", "Projects", "Planning"]
+        },
+        {
+          "name": "Projects Task Automation",
+          "description": "Configure automated actions for task assignment and status updates",
+          "estimated_hours": 3,
+          "priority": "Low",
+          "category": "Automation",
+          "odoo_feature": "Studio > Automated Actions",
+          "tags": ["Implementation", "Projects", "Automation"]
+        },
+        {
+          "name": "Projects Customer Portal",
+          "description": "Configure customer portal access for project visibility and collaboration",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Project > Configuration > Customer Portal",
+          "tags": ["Implementation", "Projects", "Portal"]
+        },
+        {
+          "name": "Projects Reports & Analytics",
+          "description": "Configure project performance, time analysis, and profitability reports",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Reporting",
+          "odoo_feature": "Project > Reporting",
+          "tags": ["Implementation", "Projects", "Reporting"]
+        },
+        {
+          "name": "Projects Data Migration - Projects & Tasks",
+          "description": "Import historical projects and tasks from legacy project management tools",
+          "estimated_hours": 6,
+          "priority": "Medium",
+          "category": "Data Migration",
+          "tags": ["Implementation", "Projects", "Data Migration"]
+        },
+        {
+          "name": "Projects Testing & Validation",
+          "description": "Test project workflows including task creation, timesheets, and billing",
+          "estimated_hours": 5,
+          "priority": "High",
+          "category": "Testing",
+          "tags": ["Implementation", "Projects", "Testing"]
+        }
+      ]
+    },
+
+    "Expenses": {
+      "description": "Employee Expense Management module for expense reporting and reimbursement",
+      "odoo_documentation": "https://www.odoo.com/documentation/19.0/applications/finance/expenses.html",
+      "implementation_tasks": [
+        {
+          "name": "Expenses Configuration - Expense Categories",
+          "description": "Set up expense categories (travel, meals, accommodation, etc.) with GL accounts",
+          "estimated_hours": 3,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Expenses > Configuration > Expense Categories",
+          "tags": ["Implementation", "Expenses", "Configuration"]
+        },
+        {
+          "name": "Expenses Approval Workflow",
+          "description": "Configure multi-level approval workflow for expense reports",
+          "estimated_hours": 3,
+          "priority": "High",
+          "category": "Workflow",
+          "odoo_feature": "Expenses > Configuration > Approval",
+          "tags": ["Implementation", "Expenses", "Approvals"]
+        },
+        {
+          "name": "Expenses OCR Receipt Scanning",
+          "description": "Enable OCR for automatic receipt scanning and expense data extraction",
+          "estimated_hours": 2,
+          "priority": "Medium",
+          "category": "Automation",
+          "odoo_feature": "Expenses > Scan Receipt",
+          "tags": ["Implementation", "Expenses", "OCR", "AI"]
+        },
+        {
+          "name": "Expenses Company Policies",
+          "description": "Configure company expense policies and spending limits by category",
+          "estimated_hours": 2,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Expenses > Configuration > Policies",
+          "tags": ["Implementation", "Expenses", "Policies"]
+        },
+        {
+          "name": "Expenses Mileage Tracking",
+          "description": "Set up mileage expense tracking with reimbursement rates",
+          "estimated_hours": 2,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Expenses > Configuration > Mileage",
+          "tags": ["Implementation", "Expenses", "Mileage"]
+        },
+        {
+          "name": "Expenses Payment Integration",
+          "description": "Configure expense payment processing and bank account integration",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Integration",
+          "odoo_feature": "Expenses > Payment",
+          "tags": ["Implementation", "Expenses", "Payment"]
+        },
+        {
+          "name": "Expenses Project/Analytic Allocation",
+          "description": "Set up project and cost center allocation for expense tracking",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Expenses > Analytic Accounts",
+          "tags": ["Implementation", "Expenses", "Analytics"]
+        },
+        {
+          "name": "Expenses Reports & Analytics",
+          "description": "Configure expense analysis and spending reports by category/employee/project",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Reporting",
+          "odoo_feature": "Expenses > Reporting",
+          "tags": ["Implementation", "Expenses", "Reporting"]
+        },
+        {
+          "name": "Expenses Testing & Validation",
+          "description": "Test expense submission, approval, and reimbursement workflows",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Testing",
+          "tags": ["Implementation", "Expenses", "Testing"]
+        }
+      ]
+    },
+
+    "Approvals": {
+      "description": "Approval Requests module for workflow approvals across business processes",
+      "odoo_documentation": "https://www.odoo.com/documentation/19.0/applications/hr/approvals.html",
+      "implementation_tasks": [
+        {
+          "name": "Approvals Configuration - Approval Categories",
+          "description": "Create approval categories (time off, business trips, purchases, etc.)",
+          "estimated_hours": 3,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Approvals > Configuration > Approval Categories",
+          "tags": ["Implementation", "Approvals", "Configuration"]
+        },
+        {
+          "name": "Approvals Workflow Design",
+          "description": "Configure multi-level approval workflows and routing rules",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Workflow",
+          "odoo_feature": "Approvals > Configuration > Approvers",
+          "tags": ["Implementation", "Approvals", "Workflow"]
+        },
+        {
+          "name": "Approvals Email Notifications",
+          "description": "Set up automated email notifications for pending approvals and decisions",
+          "estimated_hours": 2,
+          "priority": "Medium",
+          "category": "Automation",
+          "odoo_feature": "Approvals > Configuration > Email Templates",
+          "tags": ["Implementation", "Approvals", "Notifications"]
+        },
+        {
+          "name": "Approvals Integration with Other Modules",
+          "description": "Integrate approval workflows with Purchase, Expenses, HR, and other modules",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Integration",
+          "odoo_feature": "Approvals > Integration",
+          "tags": ["Implementation", "Approvals", "Integration"]
+        },
+        {
+          "name": "Approvals Reports & Analytics",
+          "description": "Configure approval cycle time and bottleneck analysis reports",
+          "estimated_hours": 2,
+          "priority": "Low",
+          "category": "Reporting",
+          "odoo_feature": "Approvals > Reporting",
+          "tags": ["Implementation", "Approvals", "Reporting"]
+        },
+        {
+          "name": "Approvals Testing & Validation",
+          "description": "Test approval request submission, routing, and decision workflows",
+          "estimated_hours": 3,
+          "priority": "High",
+          "category": "Testing",
+          "tags": ["Implementation", "Approvals", "Testing"]
+        }
+      ]
+    },
+
+    "Accounting": {
+      "description": "Accounting & Finance module for financial management and reporting",
+      "odoo_documentation": "https://www.odoo.com/documentation/19.0/applications/finance/accounting.html",
+      "implementation_tasks": [
+        {
+          "name": "Accounting Configuration - Chart of Accounts",
+          "description": "Configure or import chart of accounts based on local accounting standards",
+          "estimated_hours": 8,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > Chart of Accounts",
+          "tags": ["Implementation", "Accounting", "CoA"]
+        },
+        {
+          "name": "Accounting Configuration - Fiscal Year & Periods",
+          "description": "Set up fiscal year, accounting periods, and lock dates",
+          "estimated_hours": 2,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > Fiscal Year",
+          "tags": ["Implementation", "Accounting", "Configuration"]
+        },
+        {
+          "name": "Accounting Configuration - Journals",
+          "description": "Configure accounting journals (sales, purchase, bank, cash, misc)",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > Journals",
+          "tags": ["Implementation", "Accounting", "Journals"]
+        },
+        {
+          "name": "Accounting Configuration - Taxes",
+          "description": "Set up tax codes, rates, and tax reporting based on local regulations",
+          "estimated_hours": 6,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > Taxes",
+          "tags": ["Implementation", "Accounting", "Taxes"]
+        },
+        {
+          "name": "Accounting Bank Feed Integration",
+          "description": "Connect bank accounts for automatic transaction import and reconciliation (enhanced in v19)",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Integration",
+          "odoo_feature": "Accounting > Configuration > Bank Feeds",
+          "tags": ["Implementation", "Accounting", "Banking"]
+        },
+        {
+          "name": "Accounting Bank Reconciliation Setup",
+          "description": "Configure AI-powered bank reconciliation with matching rules (enhanced in v19)",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Bank > Reconciliation",
+          "tags": ["Implementation", "Accounting", "Reconciliation", "AI"]
+        },
+        {
+          "name": "Accounting Payment Terms & Methods",
+          "description": "Configure payment terms, methods, and follow-up procedures",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > Payment Terms",
+          "tags": ["Implementation", "Accounting", "Payments"]
+        },
+        {
+          "name": "Accounting Customer/Vendor Payment Acquirers",
+          "description": "Set up online payment processing (Stripe, PayPal, etc.) for customer invoices",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Integration",
+          "odoo_feature": "Accounting > Configuration > Payment Acquirers",
+          "tags": ["Implementation", "Accounting", "Payments"]
+        },
+        {
+          "name": "Accounting Analytic Accounts & Cost Centers",
+          "description": "Configure analytic accounts for project/department cost tracking",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > Analytic Accounts",
+          "tags": ["Implementation", "Accounting", "Analytics"]
+        },
+        {
+          "name": "Accounting Multi-Currency Setup",
+          "description": "Configure multi-currency support with exchange rates and gain/loss accounts",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > Currencies",
+          "tags": ["Implementation", "Accounting", "Multi-Currency"]
+        },
+        {
+          "name": "Accounting Multi-Company Configuration",
+          "description": "Set up multi-company accounting with inter-company transactions",
+          "estimated_hours": 6,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > Multi-Company",
+          "tags": ["Implementation", "Accounting", "Multi-Company"]
+        },
+        {
+          "name": "Accounting Fixed Assets Management",
+          "description": "Configure fixed asset tracking and depreciation schedules",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Accounting > Assets",
+          "tags": ["Implementation", "Accounting", "Assets"]
+        },
+        {
+          "name": "Accounting Invoice Automation & OCR",
+          "description": "Enable OCR for vendor bill scanning and automated invoice processing",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Automation",
+          "odoo_feature": "Accounting > Vendors > Digitize Bills",
+          "tags": ["Implementation", "Accounting", "OCR", "AI"]
+        },
+        {
+          "name": "Accounting Follow-up & Collections",
+          "description": "Configure automated payment reminders and collections workflow (WhatsApp in v19)",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Automation",
+          "odoo_feature": "Accounting > Customers > Follow-up",
+          "tags": ["Implementation", "Accounting", "Collections"]
+        },
+        {
+          "name": "Accounting ISO20022 Compliance",
+          "description": "Configure ISO20022 banking standards for international payments (v19 feature)",
+          "estimated_hours": 4,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > ISO20022",
+          "tags": ["Implementation", "Accounting", "Compliance"]
+        },
+        {
+          "name": "Accounting Withholding Tax Configuration",
+          "description": "Set up withholding tax for cross-border payments (enhanced in v19)",
+          "estimated_hours": 4,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Configuration > Withholding Tax",
+          "tags": ["Implementation", "Accounting", "Taxes"]
+        },
+        {
+          "name": "Accounting Financial Reports",
+          "description": "Configure unified financial reports (Balance Sheet, P&L, Trial Balance) - v19 enhancement",
+          "estimated_hours": 5,
+          "priority": "High",
+          "category": "Reporting",
+          "odoo_feature": "Accounting > Reporting",
+          "tags": ["Implementation", "Accounting", "Reporting"]
+        },
+        {
+          "name": "Accounting Budget Management",
+          "description": "Set up budget planning and variance analysis",
+          "estimated_hours": 4,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Accounting > Budgets",
+          "tags": ["Implementation", "Accounting", "Budgets"]
+        },
+        {
+          "name": "Accounting Data Migration - Opening Balances",
+          "description": "Import opening balances for customers, vendors, and GL accounts",
+          "estimated_hours": 12,
+          "priority": "High",
+          "category": "Data Migration",
+          "tags": ["Implementation", "Accounting", "Data Migration"]
+        },
+        {
+          "name": "Accounting Testing & Validation",
+          "description": "Test complete accounting cycle including invoicing, payments, and reconciliation",
+          "estimated_hours": 10,
+          "priority": "High",
+          "category": "Testing",
+          "tags": ["Implementation", "Accounting", "Testing"]
+        }
+      ]
+    },
+
+    "FSM": {
+      "description": "Field Service Management module for on-site service operations",
+      "odoo_documentation": "https://www.odoo.com/documentation/19.0/applications/services/field_service.html",
+      "implementation_tasks": [
+        {
+          "name": "FSM Configuration - Service Teams",
+          "description": "Set up field service teams and technician assignments",
+          "estimated_hours": 2,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Field Service > Configuration > Teams",
+          "tags": ["Implementation", "FSM", "Configuration"]
+        },
+        {
+          "name": "FSM Configuration - Service Products",
+          "description": "Configure service products and parts catalog for field operations",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Field Service > Products",
+          "tags": ["Implementation", "FSM", "Products"]
+        },
+        {
+          "name": "FSM Worksheet Templates",
+          "description": "Create customizable worksheet templates for field service tasks",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Field Service > Configuration > Worksheets",
+          "tags": ["Implementation", "FSM", "Worksheets"]
+        },
+        {
+          "name": "FSM Mobile App Configuration",
+          "description": "Configure mobile field service app for technicians",
+          "estimated_hours": 3,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Field Service > Mobile",
+          "tags": ["Implementation", "FSM", "Mobile"]
+        },
+        {
+          "name": "FSM Equipment & Asset Tracking",
+          "description": "Set up customer equipment/asset tracking for maintenance scheduling",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Field Service > Equipment",
+          "tags": ["Implementation", "FSM", "Assets"]
+        },
+        {
+          "name": "FSM Scheduling & Dispatching",
+          "description": "Configure task scheduling, route optimization, and technician dispatching",
+          "estimated_hours": 4,
+          "priority": "High",
+          "category": "Configuration",
+          "odoo_feature": "Field Service > Planning",
+          "tags": ["Implementation", "FSM", "Scheduling"]
+        },
+        {
+          "name": "FSM Time & Materials Billing",
+          "description": "Set up billable field service with time tracking and material consumption",
+          "estimated_hours": 4,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Field Service > Invoicing",
+          "tags": ["Implementation", "FSM", "Billing"]
+        },
+        {
+          "name": "FSM Customer Portal",
+          "description": "Configure customer portal for service request submission and tracking",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Configuration",
+          "odoo_feature": "Field Service > Portal",
+          "tags": ["Implementation", "FSM", "Portal"]
+        },
+        {
+          "name": "FSM GPS & Location Tracking",
+          "description": "Enable GPS tracking for technician location and travel time",
+          "estimated_hours": 2,
+          "priority": "Low",
+          "category": "Configuration",
+          "odoo_feature": "Field Service > Location",
+          "tags": ["Implementation", "FSM", "GPS"]
+        },
+        {
+          "name": "FSM Reports & Analytics",
+          "description": "Configure field service performance, SLA tracking, and technician productivity reports",
+          "estimated_hours": 3,
+          "priority": "Medium",
+          "category": "Reporting",
+          "odoo_feature": "Field Service > Reporting",
+          "tags": ["Implementation", "FSM", "Reporting"]
+        },
+        {
+          "name": "FSM Data Migration - Customer Equipment",
+          "description": "Import customer asset/equipment database and service history",
+          "estimated_hours": 6,
+          "priority": "Medium",
+          "category": "Data Migration",
+          "tags": ["Implementation", "FSM", "Data Migration"]
+        },
+        {
+          "name": "FSM Testing & Validation",
+          "description": "Test complete field service workflow from task creation to invoicing",
+          "estimated_hours": 6,
+          "priority": "High",
+          "category": "Testing",
+          "tags": ["Implementation", "FSM", "Testing"]
+        }
+      ]
+    }
+  }
+}
