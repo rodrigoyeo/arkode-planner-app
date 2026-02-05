@@ -303,13 +303,13 @@ export default function PlanDisplay({
   const handleExport = (type) => {
     switch (type) {
       case 'all':
-        exportAll(responses, deliverables, flatTasks, deletedTaskIds);
+        exportAll(responses, deliverables, flatTasks);
         break;
       case 'tasks':
-        exportTasksCSV(responses, flatTasks, deletedTaskIds);
+        exportTasksCSV(responses, flatTasks);
         break;
       case 'deliverables':
-        exportDeliverablesOnlyCSV(responses, flatTasks, deletedTaskIds);
+        exportDeliverablesOnlyCSV(responses, flatTasks);
         break;
       case 'milestones':
         exportMilestonesCSV(responses);

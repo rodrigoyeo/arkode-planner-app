@@ -138,22 +138,20 @@ export function useProjectPlan() {
 
   /**
    * Get active tasks (excluding deleted)
+   * Note: Computing directly instead of useMemo to ensure filtering always runs
    */
-  const activeFlatTasks = useMemo(() => {
-    return flatTasks.filter(task => !deletedTaskIds.has(task.id));
-  }, [flatTasks, deletedTaskIds]);
+  const activeFlatTasks = flatTasks.filter(task => !deletedTaskIds.has(task.id));
 
   /**
    * Get active deliverables (excluding deleted)
+   * Note: Computing directly instead of useMemo to ensure filtering always runs
    */
-  const activeDeliverables = useMemo(() => {
-    return deliverables
-      .filter(d => !deletedTaskIds.has(d.id))
-      .map(d => ({
-        ...d,
-        subtasks: (d.subtasks || []).filter(st => !deletedTaskIds.has(st.id))
-      }));
-  }, [deliverables, deletedTaskIds]);
+  const activeDeliverables = deliverables
+    .filter(d => !deletedTaskIds.has(d.id))
+    .map(d => ({
+      ...d,
+      subtasks: (d.subtasks || []).filter(st => !deletedTaskIds.has(st.id))
+    }));
 
   /**
    * Calculate total hours from active deliverables

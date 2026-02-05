@@ -116,13 +116,6 @@ export function exportMilestonesCSV(responses) {
 }
 
 /**
- * Export tasks CSV with Parent Task hierarchy
- * @param {Object} responses - Questionnaire responses
- * @param {Array} flatTasks - Flat task list from consolidator
- * @param {Set} deletedTaskIds - Set of deleted task IDs
- * @returns {void} - Downloads CSV file
- */
-/**
  * Get Odoo-compatible tag for a phase
  * @param {string} phase - Phase name (Clarity, Implementation, Adoption)
  * @returns {string} - Odoo tag name
@@ -136,12 +129,16 @@ function getOdooTag(phase) {
   }
 }
 
-export function exportTasksCSV(responses, flatTasks, deletedTaskIds = new Set()) {
-  // Filter out deleted tasks
-  const activeTasks = flatTasks.filter(task => !deletedTaskIds.has(task.id));
-
+/**
+ * Export tasks CSV with Parent Task hierarchy
+ * @param {Object} responses - Questionnaire responses
+ * @param {Array} flatTasks - Flat task list (already filtered by hook)
+ * @returns {void} - Downloads CSV file
+ */
+export function exportTasksCSV(responses, flatTasks) {
+  // flatTasks is already filtered (deleted tasks removed) by useProjectPlan hook
   // Build CSV data with Parent Task relationships
-  const csvData = activeTasks.map(task => {
+  const csvData = flatTasks.map(task => {
     // Use Odoo-compatible tags only
     const tag = getOdooTag(task.phase);
 
@@ -165,27 +162,23 @@ export function exportTasksCSV(responses, flatTasks, deletedTaskIds = new Set())
 /**
  * Export all CSVs (project, milestones, tasks)
  * @param {Object} responses - Questionnaire responses
- * @param {Array} deliverables - Consolidated deliverables
- * @param {Array} flatTasks - Flat task list
- * @param {Set} deletedTaskIds - Set of deleted task IDs
+ * @param {Array} deliverables - Consolidated deliverables (already filtered)
+ * @param {Array} flatTasks - Flat task list (already filtered)
  */
-export function exportAll(responses, deliverables, flatTasks, deletedTaskIds = new Set()) {
+export function exportAll(responses, deliverables, flatTasks) {
   exportProjectCSV(responses, deliverables);
   setTimeout(() => exportMilestonesCSV(responses), 500);
-  setTimeout(() => exportTasksCSV(responses, flatTasks, deletedTaskIds), 1000);
+  setTimeout(() => exportTasksCSV(responses, flatTasks), 1000);
 }
 
 /**
  * Export deliverables only (no subtasks)
  * @param {Object} responses - Questionnaire responses
- * @param {Array} flatTasks - Flat task list
- * @param {Set} deletedTaskIds - Set of deleted task IDs
+ * @param {Array} flatTasks - Flat task list (already filtered)
  */
-export function exportDeliverablesOnlyCSV(responses, flatTasks, deletedTaskIds = new Set()) {
-  // Filter to deliverables only
-  const deliverables = flatTasks.filter(task =>
-    task.task_type === 'deliverable' && !deletedTaskIds.has(task.id)
-  );
+export function exportDeliverablesOnlyCSV(responses, flatTasks) {
+  // Filter to deliverables only (flatTasks already has deleted tasks removed)
+  const deliverables = flatTasks.filter(task => task.task_type === 'deliverable');
 
   const csvData = deliverables.map(task => ({
     'Title': task.title,
