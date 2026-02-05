@@ -965,8 +965,8 @@ const TEAM_MEMBER_ROLES = {
   'Josué Isaías Torres Gonzalez': 'Process Consultant',
   'José De Jesus Ruvalcaba Luna': 'Odoo Developer',
   'Kenneth André Parrales Aguirre': 'Odoo Developer',
-  'Martin Zollneritsch': 'Process Consultant',
-  'Rodrigo Yeo': 'Process Consultant',
+  'Martin Zollneritsch': 'Managing Director',
+  'Rodrigo Yeo': 'Managing Director',
   'Salvador Perez Barrera': 'Process Consultant'
 };
 
