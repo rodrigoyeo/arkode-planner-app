@@ -503,11 +503,13 @@ function generateFlatTaskList(deliverables, responses) {
  * Team member roles mapping
  */
 const TEAM_MEMBER_ROLES = {
-  'Luis Angel Muñoz Zermeño': 'Process Consultant',
+  'Andrés Solórzano': 'Process Consultant',
   'Jose Ricardo Gomez Duran': 'Process Consultant',
   'Josué Isaías Torres Gonzalez': 'Process Consultant',
   'José De Jesus Ruvalcaba Luna': 'Odoo Developer',
+  'Kenneth André Parrales Aguirre': 'Odoo Developer',
   'Martin Zollneritsch': 'Process Consultant',
+  'Rodrigo Yeo': 'Process Consultant',
   'Salvador Perez Barrera': 'Process Consultant'
 };
 

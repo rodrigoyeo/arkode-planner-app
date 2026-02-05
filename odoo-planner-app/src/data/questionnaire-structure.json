@@ -53,12 +53,13 @@
           "type": "select",
           "required": false,
           "options": [
-            "Luis Angel Muñoz Zermeño",
+            "Andrés Solórzano",
             "Jose Ricardo Gomez Duran",
             "Josué Isaías Torres Gonzalez",
             "José De Jesus Ruvalcaba Luna",
-            "Rodrigo Yeo",
+            "Kenneth André Parrales Aguirre",
             "Martin Zollneritsch",
+            "Rodrigo Yeo",
             "Salvador Perez Barrera"
           ]
         },
@@ -69,11 +70,13 @@
           "type": "multiselect",
           "required": false,
           "options": [
-            {"value": "Luis Angel Muñoz Zermeño", "label": "Luis Angel Muñoz Zermeño", "role": "Process Consultant"},
+            {"value": "Andrés Solórzano", "label": "Andrés Solórzano", "role": "Process Consultant"},
             {"value": "Jose Ricardo Gomez Duran", "label": "Jose Ricardo Gomez Duran", "role": "Process Consultant"},
             {"value": "Josué Isaías Torres Gonzalez", "label": "Josué Isaías Torres Gonzalez", "role": "Process Consultant"},
             {"value": "José De Jesus Ruvalcaba Luna", "label": "José De Jesus Ruvalcaba Luna", "role": "Odoo Developer"},
+            {"value": "Kenneth André Parrales Aguirre", "label": "Kenneth André Parrales Aguirre", "role": "Odoo Developer"},
             {"value": "Martin Zollneritsch", "label": "Martin Zollneritsch", "role": "Process Consultant"},
+            {"value": "Rodrigo Yeo", "label": "Rodrigo Yeo", "role": "Process Consultant"},
             {"value": "Salvador Perez Barrera", "label": "Salvador Perez Barrera", "role": "Process Consultant"}
           ]
         },
